@@ -7,10 +7,12 @@ import ChatBox from "./ChatBox";
 import ReducedChatBox from "./ReducedChatBox";
 import ProfilePopup from "./ProfilePopup";
 import Link from "next/link";
+import NotificationsPopup from "./NotificationsPopup";
 
 const Navbar = () => {
   const user = "user";
   const [open, setOpen] = useState(false);
+  const [openNotifications, setOpenNotifications] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [reduced, setReduced] = useState(false);
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
@@ -85,7 +87,10 @@ const Navbar = () => {
                 alt="chat"
               />
             </div>
-            <Link href={"/createPost"} className="flex gap-1 items-center mr-2 cursor-pointer">
+            <Link
+              href={"/createPost"}
+              className="flex gap-1 items-center mr-2 cursor-pointer"
+            >
               <Image
                 src={"/images/plus.svg"}
                 height={25}
@@ -94,7 +99,10 @@ const Navbar = () => {
               />
               <span className="text-sm font-bold">Create</span>
             </Link>
-            <div className="relative">
+            <div
+              onClick={() => setOpenNotifications((prev) => !prev)}
+              className="relative"
+            >
               <div className="w-4 h-4 bg-orange-600 rounded-full absolute right-[-5px] top-[-5px] text-white text-[10px] font-bold flex justify-center items-center">
                 5
               </div>
@@ -109,7 +117,7 @@ const Navbar = () => {
             </div>
             <div className="cursor-pointer relative">
               <Image
-                onClick={()=>setProfilePopupOpen((prev)=>!prev)}
+                onClick={() => setProfilePopupOpen((prev) => !prev)}
                 className="rounded-full"
                 src={"/images/peter.png"}
                 height={35}
@@ -135,6 +143,7 @@ const Navbar = () => {
         handleOpenChatBox={handleOpenChatBox}
       />
       {profilePopupOpen && <ProfilePopup />}
+      {openNotifications && <NotificationsPopup />}
     </div>
   );
 };

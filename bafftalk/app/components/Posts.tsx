@@ -46,7 +46,7 @@ const Posts = () => {
       }
   ];
   return (
-    <div className="flex flex-col gap-1 px-2 xl:px-8 w-full lg:w-[calc(100vw-260px)] lg:ml-[255px] xl:w-[calc(100vw-255px-355px)] xl:ml-[255px] xl:mr-[355px] ">
+    <div className="flex flex-col gap-1 px-2 xl:px-8 w-full lg:w-[calc(100vw-265px)] lg:ml-[255px] xl:w-[calc(100vw-250px-360px)] xl:ml-[250px] xl:mr-[350px] ">
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}

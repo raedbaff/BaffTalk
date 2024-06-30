@@ -1,5 +1,7 @@
+"use client";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Comment from "./Comment";
 
 type Post = {
   id: number;
@@ -12,6 +14,14 @@ type Post = {
   comments: number;
 };
 const Post = ({ post }: { post: Post }) => {
+  const [sortBy, setSortBy] = useState("New");
+  const [sort, setSort] = useState(false);
+  const [openComments, setOpenComments] = useState(false);
+
+  const handleSort = (sortType: string) => {
+    setSortBy(sortType);
+    setSort(false);
+  };
   return (
     <div className="flex flex-col w-full h-auto">
       {/* header */}
@@ -66,7 +76,7 @@ const Post = ({ post }: { post: Post }) => {
               className="cursor-pointer"
             />
           </div>
-          <div className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer ">
+          <div onClick={()=>setOpenComments(true)} className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer ">
             <Image
               src={"/images/comment.svg"}
               height={20}
@@ -86,6 +96,91 @@ const Post = ({ post }: { post: Post }) => {
           </div>
         </div>
       </div>
+      {openComments && (
+        <div>
+          <input
+            className="w-full rounded-[20px] bg-gray-50 px-4 py-1 mt-2 border border-gray-400"
+            type="text"
+            placeholder="post a comment"
+          ></input>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="text-[12px] text-gray-600 px-2">Sort By : </div>
+            <div className="relative">
+              <div
+                onClick={() => setSort((prev) => !prev)}
+                className="flex items-center gap-2 text-[12px] text-gray-700 border bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-[20px] px-3 py-1"
+              >
+                {sortBy}
+                <Image
+                  src={"/images/arrowDown.svg"}
+                  height={10}
+                  width={10}
+                  alt="arrowDown"
+                />
+              </div>
+              {sort && (
+                <div className="absolute w-[150px] z-[60] bg-white flex flex-col gap-2 border border-gray-300 rounded shadow-lg p-2">
+                  <strong className="px-2 py-1">Sort by</strong>
+                  <div
+                    onClick={() => handleSort("New")}
+                    className="w-full px-4 flex items-center gap-2 py-2 hover:cursor-pointer hover:bg-gray-200 "
+                  >
+                    <Image
+                      src={"/icons/new.svg"}
+                      alt="new"
+                      width={20}
+                      height={20}
+                    />
+                    New
+                  </div>
+                  <div
+                    onClick={() => handleSort("Old")}
+                    className="w-full px-4 flex items-center gap-2 py-2 hover:cursor-pointer hover:bg-gray-200 "
+                  >
+                    <Image
+                      src={"/icons/trash.svg"}
+                      alt="new"
+                      width={20}
+                      height={20}
+                    />
+                    Old
+                  </div>
+                  <div
+                    onClick={() => handleSort("Top")}
+                    className="w-full px-4 flex items-center gap-2 py-2 hover:cursor-pointer hover:bg-gray-200 "
+                  >
+                    <Image
+                      src={"/icons/rocket.svg"}
+                      alt="new"
+                      width={20}
+                      height={20}
+                    />
+                    Top
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search Comments"
+                className="rounded-[25px] bg-gray-50 border-gray-800 border py-1 pl-10 pr-4"
+              />
+              <Image
+                src={"/icons/search.svg"}
+                width={15}
+                height={15}
+                alt="search"
+                className="absolute left-3 top-[50%] transform -translate-y-1/2"
+              />
+            </div>
+          </div>
+          <Comment />
+          <Comment />
+        </div>
+      )}
+
       <hr className="border-t-1 border-gray-300 my-2 w-full"></hr>
     </div>
   );
