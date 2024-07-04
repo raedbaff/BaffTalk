@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Popular from "./components/Popular";
+import { AuthProvider } from "./context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,20 +20,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Navbar />
-        <div className="flex mt-[55px]">
-          <Sidebar />
-          <div className="h-screen bg-gray-300">
-            <div className="h-full w-px bg-gray-300"></div>
+      <AuthProvider>
+        <body className={inter.className}>
+          <div className="flex mt-[55px]">
+            <Sidebar />
+            <div className="h-screen bg-gray-300">
+              <div className="h-full w-px bg-gray-300"></div>
+            </div>
+            <div className="w-full">{children}</div>
+            <Popular />
           </div>
-           <div className="w-full">
-           {children}
-           </div>
-          <Popular />
-        </div>
-       
-      </body>
+          <Navbar />
+        </body>
+      </AuthProvider>
     </html>
   );
 }

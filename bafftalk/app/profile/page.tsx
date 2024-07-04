@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import MyProfileContent from "../components/MyProfileContent";
 import UserInfoModal from "../components/UserInfoModal";
 import Link from "next/link";
+import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
+  const {GlobalUser}=useAuth()
   const [selectedMenu, setSelectedMenu] = useState("Overview");
   const [displayInfo,setDisplayInfo]=useState(false)
   return (
@@ -15,8 +17,9 @@ const Profile = () => {
         <div className="w-full">
           <div className="flex p-2">
             <Image
+            loader={()=>GlobalUser?.avatar}
               className="rounded-[20px]"
-              src={"/images/peter.png"}
+              src={GlobalUser?.avatar}
               height={300}
               width={120}
               alt="peter"
@@ -24,7 +27,7 @@ const Profile = () => {
             <div className="flex flex-col">
               <div className="mt-auto flex flex-col gap-1 px-4 py-2">
                 <div className="flex gap-2 items-center">
-                  <strong className="font-bold text-lg">Raed Baff </strong>
+                  <strong className="font-bold text-lg">{GlobalUser?.username}</strong>
                   <Image
                     onClick={()=>setDisplayInfo(true)}
                     className="cursor-pointer"
@@ -34,7 +37,7 @@ const Profile = () => {
                     alt="info"
                   />
                 </div>
-                <span className="text-sm text-gray-400">u/Raed_Baff</span>
+                <span className="text-sm text-gray-400">u/{GlobalUser?.username}</span>
               </div>
             </div>
           </div>
@@ -101,7 +104,7 @@ const Profile = () => {
           </Link>
           <hr className="border-gray-300 my-0 w-full mt-2"></hr>
           <div className="mt-2 flex justify-center items-center">
-            <MyProfileContent contentType={selectedMenu} />
+            <MyProfileContent data={GlobalUser?.posts} contentType={selectedMenu} />
           </div>
         </div>
       </div>

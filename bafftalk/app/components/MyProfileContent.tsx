@@ -1,15 +1,30 @@
 import Image from "next/image";
 import React from "react";
 
-const MyProfileContent = ({ contentType }: { contentType: string }) => {
+const MyProfileContent = ({
+  contentType,
+  data,
+}: {
+  contentType: string;
+  data: any;
+}) => {
   let content;
   switch (contentType) {
     case "Overview":
       content = (
-        <div className="flex flex-col gap-2 justify-center items-center mt-2">
-          <Image src={"/images/404.svg"} alt="404" width={50} height={50} />
-          <p className="font-bold text-lg">Raed_Baff hasn&apos;t posted yet</p>
-        </div>
+        <>
+          {!data ? (
+            <div className="flex flex-col gap-2 justify-center items-center mt-2">
+              {" "}
+              <Image src={"/images/404.svg"} alt="404" width={50} height={50} />
+              <p className="font-bold text-lg">
+                Raed_Baff hasn&apos;t posted yet
+              </p>
+            </div>
+          ) : (
+            <div> data exists</div>
+          )}
+        </>
       );
       break;
     case "Posts":
@@ -25,11 +40,10 @@ const MyProfileContent = ({ contentType }: { contentType: string }) => {
         <div className="flex flex-col gap-2 justify-center items-center mt-2">
           <Image src={"/images/404.svg"} alt="404" width={50} height={50} />
           <div>
-          <p className="font-bold text-lg">
-            Raed_Baff hasn&apos;t commented yet
-          </p>
+            <p className="font-bold text-lg">
+              Raed_Baff hasn&apos;t commented yet
+            </p>
           </div>
-          
         </div>
       );
       break;

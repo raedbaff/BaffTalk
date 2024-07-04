@@ -5,8 +5,8 @@ import Topics from "../components/Topics";
 import TextEditor from "../components/TextEditor";
 import { useRouter } from "next/navigation";
 
-const CreatePost = () => {
-  const router=useRouter()
+const CreateGroup = () => {
+  const router = useRouter();
   const [selectedPostType, setSelectedPostType] = useState("Text");
   const [wordCount, setWordCount] = useState(0);
   const [chooseTopic, setChooseTopic] = useState(false);
@@ -31,10 +31,21 @@ const CreatePost = () => {
     >
       <div className="p-6 flex flex-col ">
         <div className="flex items-center">
-          <strong className="text-2xl ">Create Post</strong>
-          <button onClick={()=>{router.push("/createGroup")}} className="ml-auto p-2 bg-white rounded-[20px] flex items-center text-black border border-gray-600">
-            <Image src={"/images/plus.svg"} width={30} height={30} alt="createGroup"/>
-            Create Group</button>
+          <strong className="text-2xl ">Create Group</strong>
+          <button
+            onClick={() => {
+              router.push("/createPost");
+            }}
+            className="ml-auto p-2 bg-white rounded-[20px] flex items-center text-black border border-gray-600"
+          >
+            <Image
+              src={"/images/plus.svg"}
+              width={30}
+              height={30}
+              alt="createGroup"
+            />
+            Create Post
+          </button>
         </div>
         <div className="mt-2 relative">
           <button
@@ -103,26 +114,13 @@ const CreatePost = () => {
                 ></hr>
               </div>
             </div>
-            <div
-              onClick={() => setSelectedPostType("Link")}
-              className="font-bold hover:border hover:bg-gray-300 p-2 cursor-pointer relative text-sm "
-            >
-              Link
-              <div className="absolute bottom-0 left-0 w-full flex flex-col items-center">
-                <hr
-                  className={`mb-auto  border-t-[5px] border-blue-800 my-2 w-[80%] ${
-                    selectedPostType === "Link" ? "" : "hidden"
-                  }`}
-                ></hr>
-              </div>
-            </div>
           </div>
           <div className="flex gap-2 items-center mt-2 px-3 py-4 relative">
             <input
               onChange={handleChange}
               className="w-full p-2 border border-gray-600 hover:bg-gray-200 rounded-[15px]"
               type="text"
-              placeholder="Title *"
+              placeholder="Group title *"
             ></input>
             <div className="absolute right-3 bottom-[-5px] text-[12px] ">
               {wordCount}/300
@@ -130,36 +128,34 @@ const CreatePost = () => {
           </div>
           {selectedPostType === "Text" && (
             <div className="mt-2 px-3 py-4">
+              <label className="p-2 font-bold">Group description</label>
               <TextEditor />
             </div>
           )}
           {selectedPostType === "Images & videos" && (
-            <div className="mt-2 h-[100px] p-2 border border-gray-200 rounded-[15px] flex flex-col items-center justify-center">
-              <div className="w-full h-full flex flex-col items-center justify-center">
-                <label htmlFor="fileInput" className="cursor-pointer ">
-                  <div className="flex gap-2 items-center">
-                    <h1>Choose file</h1>{" "}
-                    <Image
-                      src={"/icons/upload.svg"}
-                      alt="upload"
-                      width={25}
-                      height={25}
-                    />
-                  </div>
-                  <input id="fileInput" className="hidden" type="file"></input>
-                </label>
+            <>
+              <label className="p-2 font-bold">Group Image</label>
+              <div className="mt-2 h-[100px] p-2 border border-gray-200 rounded-[15px] flex flex-col items-center justify-center">
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <label htmlFor="fileInput" className="cursor-pointer ">
+                    <div className="flex gap-2 items-center">
+                      <h1>Choose file</h1>{" "}
+                      <Image
+                        src={"/icons/upload.svg"}
+                        alt="upload"
+                        width={25}
+                        height={25}
+                      />
+                    </div>
+                    <input
+                      id="fileInput"
+                      className="hidden"
+                      type="file"
+                    ></input>
+                  </label>
+                </div>
               </div>
-            </div>
-          )}
-          {selectedPostType === "Link" && (
-            <div className="flex gap-2 items-center mt-2 px-3 py-4">
-              <input
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-600 hover:bg-gray-200 rounded-[15px]"
-                type="text"
-                placeholder="Link *"
-              ></input>
-            </div>
+            </>
           )}
         </div>
       </div>
@@ -167,4 +163,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default CreateGroup;
