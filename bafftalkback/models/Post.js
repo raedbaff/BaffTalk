@@ -10,8 +10,9 @@ const PostSchema = new mongoose.Schema(
       required: [true, "Post description required"],
     },
     postImage: {
-      type: String,
-      default: "",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "uploads.files",
+      required:false
     },
     topic: {
       type: String,

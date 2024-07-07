@@ -1,29 +1,118 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import Topics from "../components/Topics";
+import React, { FormEvent, useEffect, useState } from "react";
 import TextEditor from "../components/TextEditor";
 import { useRouter } from "next/navigation";
+import Topic from "../components/Topic";
+import { topics } from "../../data";
+import { useAuth } from "../context/AuthContext";
 
 const CreateGroup = () => {
+  const { GlobalUser } = useAuth();
+  const [filteredTopics, setfilteredTopics] = useState(topics);
   const router = useRouter();
   const [selectedPostType, setSelectedPostType] = useState("Text");
   const [wordCount, setWordCount] = useState(0);
   const [chooseTopic, setChooseTopic] = useState(false);
+  const [dropDownTopics, setDropDownTopics] = useState(false);
+  const [topic, setTopic] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [maker, setMaker] = useState(GlobalUser?._id);
+  const [photo, setPhoto] = useState(null);
+  const [noNameError, setnoNameError] = useState(false);
+  const [noDescError, setnoDescError] = useState(false);
+  const [noTopicError, setnoTopicError] = useState(false);
+  const [success, setsuccess] = useState(false);
+  const handleFileChange = (e: React.ChangeEvent<any>) => {
+    setPhoto(e.target.files[0]);
+  };
   const handlebutton = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     setChooseTopic(true);
+    setDropDownTopics(true);
   };
   const handleClickAnywhere = () => {
-    setChooseTopic(false);
+    // setChooseTopic(false);
+    // setTopic("")
   };
   const handleInputClick = (e: React.MouseEvent<HTMLElement>) => {
+    setfilteredTopics(topics);
     e.stopPropagation();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputText = e.target.value;
     setWordCount(inputText.length);
+    setName(inputText);
   };
+  const handleTopicChange = (topic: any, e: React.ChangeEvent<any>) => {
+    e.stopPropagation();
+    setTopic(topic.name);
+    setDropDownTopics(false);
+  };
+  const filterTopics = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDropDownTopics(true);
+    let filteredData = topics.filter((topic) =>
+      topic.name.toLowerCase().includes(e.target.value)
+    );
+    setfilteredTopics(filteredData);
+    setTopic(e.target.value);
+  };
+  const handleTopicInuputClick = () => {
+    setTopic("");
+    setDropDownTopics(true);
+  };
+  const resetActions = () => {
+    setfilteredTopics(topics);
+    setChooseTopic(false);
+    setTopic("");
+    setDropDownTopics(false);
+  };
+  const handleSubmit = async (e: any) => {
+    try {
+      e.preventDefault();
+      if (!name) {
+        setnoNameError(true);
+        setTimeout(() => {
+          setnoNameError(false);
+        }, 2000);
+      }
+      if (!description) {
+        setnoDescError(true);
+        setTimeout(() => {
+          setnoDescError(false);
+        }, 2000);
+      }
+      if (!topic) {
+        setnoTopicError(true);
+        setTimeout(() => {
+          setnoTopicError(false);
+        }, 2000);
+      }
+
+      const formdata = new FormData();
+      formdata.append("name", name);
+      formdata.append("description", description);
+      if (photo) {
+        formdata.append("file", photo);
+      }
+      formdata.append("topic", topic);
+      formdata.append("maker", maker);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group`,
+        {
+          method: "POST",
+          body: formdata,
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div
       onClick={handleClickAnywhere}
@@ -51,7 +140,7 @@ const CreateGroup = () => {
           <button
             onClick={handlebutton}
             className={`px-2 py-1 border border-black rounded-[25px] bg-gray-200 flex items-center gap-2 ${
-              !chooseTopic ? "" : "hidden"
+              !chooseTopic && topic === "" ? "" : "hidden"
             }`}
           >
             <Image
@@ -69,24 +158,82 @@ const CreateGroup = () => {
               width={25}
             />
           </button>
+          {noTopicError && (
+            <span className="px-6 py-2 text-red-600 font-bold">
+              Please provide topic
+            </span>
+          )}
+
           <div
-            className={`relative w-[50%] ${chooseTopic ? "block" : "hidden"}`}
+            className={`relative w-[50%] p-2 ${
+              chooseTopic ? "block" : "hidden"
+            }`}
             onClick={handleInputClick}
           >
-            <input
-              type="text"
-              placeholder="Search bafftalk"
-              className="rounded-[25px] bg-gray-200 py-2 pl-10 pr-4 w-full "
-            />
-            <Image
-              src={"/icons/search.svg"}
-              width={20}
-              height={20}
-              alt="search"
-              className="absolute left-3 top-[50%] transform -translate-y-1/2"
-            />
+            <div
+              onClick={handleTopicInuputClick}
+              className="rounded-[25px] bg-gray-200 py-2 pl-5 pr-4 w-full flex items-center gap-2 "
+            >
+              <Image
+                src={"/images/topic.svg"}
+                width={20}
+                height={20}
+                alt={topic}
+              />
+              {topic ? `${topic}` : "topic"}
+            </div>
           </div>
-          <Topics chooseTopic={chooseTopic} />
+
+          {dropDownTopics && (
+            <div className=" mt-2 w-[300px] shadow-lg z-50 border-black flex flex-col rounded-[10px]">
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <strong>Topics</strong>
+
+                  <button
+                    className="ml-auto text-red-600"
+                    onClick={resetActions}
+                  >
+                    cancel
+                  </button>
+                </div>
+                <div
+                  className={`relative w-full p-2 ${
+                    chooseTopic ? "block" : "hidden"
+                  }`}
+                  onClick={handleInputClick}
+                >
+                  <input
+                    type="text"
+                    onClick={handleTopicInuputClick}
+                    value={topic}
+                    onChange={filterTopics}
+                    placeholder="Search Topic"
+                    className="rounded-[25px] bg-gray-200 py-2 pl-10 pr-4 w-full "
+                  />
+                  <Image
+                    src={"/icons/search.svg"}
+                    width={20}
+                    height={20}
+                    alt="search"
+                    className="absolute left-3 top-[50%] transform -translate-y-1/2"
+                  />
+                </div>
+                {filteredTopics.map((topic) => (
+                  <div
+                    key={topic.name}
+                    onClick={(e) => handleTopicChange(topic, e)}
+                  >
+                    <Topic
+                      key={topic.name}
+                      name={topic.name}
+                      photo={topic.photo}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex gap-2 items-center mt-2 px-3 py-4">
             <div
               onClick={() => setSelectedPostType("Text")}
@@ -126,10 +273,26 @@ const CreateGroup = () => {
               {wordCount}/300
             </div>
           </div>
+          {noNameError && (
+            <span className="px-6 py-2 text-red-600 font-bold">
+              Please provide title
+            </span>
+          )}
           {selectedPostType === "Text" && (
-            <div className="mt-2 px-3 py-4">
+            <div className="mt-2 px-3 py-4 flex flex-col  gap-2">
               <label className="p-2 font-bold">Group description</label>
-              <TextEditor />
+              <textarea
+                className="h-[150px] p-2 rounded-[20px] border border-black "
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="description"
+                value={description}
+              />
+
+              {noDescError && (
+                <span className="px-3 py-2 text-red-600 font-bold">
+                  Please provide description for your group
+                </span>
+              )}
             </div>
           )}
           {selectedPostType === "Images & videos" && (
@@ -151,6 +314,7 @@ const CreateGroup = () => {
                       id="fileInput"
                       className="hidden"
                       type="file"
+                      onChange={handleFileChange}
                     ></input>
                   </label>
                 </div>
@@ -158,6 +322,12 @@ const CreateGroup = () => {
             </>
           )}
         </div>
+        <button
+          onClick={handleSubmit}
+          className="bg-gray-500 p-2 text-white border rounded-[20px]"
+        >
+          Submit
+        </button>
       </div>
     </div>
   );

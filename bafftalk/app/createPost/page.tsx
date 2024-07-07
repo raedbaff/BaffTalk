@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import Topics from "../components/Topics";
+import Topics from "../components/Topic";
 import TextEditor from "../components/TextEditor";
 import { useRouter } from "next/navigation";
 
 const CreatePost = () => {
-  const router=useRouter()
+  const router = useRouter();
   const [selectedPostType, setSelectedPostType] = useState("Text");
   const [wordCount, setWordCount] = useState(0);
   const [chooseTopic, setChooseTopic] = useState(false);
@@ -32,9 +32,20 @@ const CreatePost = () => {
       <div className="p-6 flex flex-col ">
         <div className="flex items-center">
           <strong className="text-2xl ">Create Post</strong>
-          <button onClick={()=>{router.push("/createGroup")}} className="ml-auto p-2 bg-white rounded-[20px] flex items-center text-black border border-gray-600">
-            <Image src={"/images/plus.svg"} width={30} height={30} alt="createGroup"/>
-            Create Group</button>
+          <button
+            onClick={() => {
+              router.push("/createGroup");
+            }}
+            className="ml-auto p-2 bg-white rounded-[20px] flex items-center text-black border border-gray-600"
+          >
+            <Image
+              src={"/images/plus.svg"}
+              width={30}
+              height={30}
+              alt="createGroup"
+            />
+            Create Group
+          </button>
         </div>
         <div className="mt-2 relative">
           <button

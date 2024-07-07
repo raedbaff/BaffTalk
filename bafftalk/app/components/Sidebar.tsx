@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import { topics } from "../../data";
 
 const Sidebar = () => {
   return (
@@ -24,43 +25,15 @@ const Sidebar = () => {
         <div className="mb-3">
           <span className="text-gray-400 p-2 ml-3">Topics</span>
         </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/images/gaming.svg"} width={20} height={20} alt="home" />
-          Gaming
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/tech.svg"} width={20} height={20} alt="home" />
-          Technology
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/movies.svg"} width={20} height={20} alt="home" />
-          Movies
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/music.svg"} width={20} height={20} alt="home" />
-          Music
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/memes.svg"} width={20} height={20} alt="home" />
-          Memes
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/sports.svg"} width={20} height={20} alt="home" />
-          Sports
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/science.svg"} width={20} height={20} alt="home" />
-          Science
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/books.svg"} width={20} height={20} alt="home" />
-          Books
-        </div>
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
-          <Image src={"/icons/news.svg"} width={20} height={20} alt="home" />
-          News
-        </div>
-
+        {topics.map((topic) => (
+          <div
+            key={topic.name}
+            className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer "
+          >
+            <Image src={topic.photo} width={20} height={20} alt="home" />
+            {topic.name}
+          </div>
+        ))}
         <hr className="border-t-1 border-gray-300 my-0 w-full mt-2"></hr>
       </div>
       <div className="mt-2 p-2 mb-2">

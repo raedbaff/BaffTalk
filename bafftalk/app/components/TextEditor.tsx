@@ -4,11 +4,16 @@ import 'react-quill/dist/quill.snow.css';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
-const TextEditor: React.FC = () => {
+interface TextEditorProps {
+  onChange: (content: string) => void;
+}
+
+const TextEditor: React.FC<TextEditorProps> = ({ onChange }) => {
   const [value, setValue] = useState<string>('');
 
   const handleChange = (content: string) => {
     setValue(content);
+    onChange(content); // Call the passed in onChange function
   };
 
   return (

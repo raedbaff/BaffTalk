@@ -10,8 +10,9 @@ const GroupSchema = new mongoose.Schema(
       required: [true, "Group description required"],
     },
     groupImage: {
-      type: String,
-      default: "",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "uploads.files",
+      required:[true,"Group image is required"]
     },
     topic: {
       type: String,
@@ -26,6 +27,7 @@ const GroupSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required:false,
         default: [],
       },
     ],
