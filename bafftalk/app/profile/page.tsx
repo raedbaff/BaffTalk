@@ -11,7 +11,7 @@ const Profile = () => {
   const [selectedMenu, setSelectedMenu] = useState("Overview");
   const [displayInfo,setDisplayInfo]=useState(false)
   return (
-    <div className="flex flex-col gap-1 px-2 xl:px-8 w-full lg:w-[calc(100vw-260px)] lg:ml-[255px] xl:w-[calc(100vw-255px-355px)] xl:ml-[255px] xl:mr-[355px]">
+    <div className="flex flex-col gap-1 px-2 xl:px-8 w-full lg:w-[calc(100vw-260px)] lg:ml-[255px]">
         <UserInfoModal displayInfo={displayInfo} setDisplayInfo={setDisplayInfo} />
       <div className="flex">
         <div className="w-full">

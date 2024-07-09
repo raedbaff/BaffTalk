@@ -12,7 +12,7 @@ const GroupSchema = new mongoose.Schema(
     groupImage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "uploads.files",
-      required:[true,"Group image is required"]
+      required: [true, "Group image is required"],
     },
     topic: {
       type: String,
@@ -27,12 +27,26 @@ const GroupSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required:false,
+        required: false,
         default: [],
       },
     ],
+    rules: [
+      {
+        name: {
+          type: String,
+          required: [true, "Rule name is required"],
+        },
+        description: {
+          type: String,
+          required: [true, "Rule description is required"],
+          min:[10,"Description must be at least 10 characters long"]
+        },
+      },
+    ],
+    default: [],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const Group = mongoose.model("Group", GroupSchema);

@@ -28,7 +28,6 @@ export default function RootLayout({
               <div className="h-full w-px bg-gray-300"></div>
             </div>
             <div className="w-full">{children}</div>
-            <Popular />
           </div>
           <Navbar />
         </body>

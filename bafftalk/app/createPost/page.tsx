@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import Topics from "../components/Topic";
 import TextEditor from "../components/TextEditor";
 import { useRouter } from "next/navigation";
+import { topics } from "@/data";
+import Topic from "../components/Topic";
 
 const CreatePost = () => {
   const router = useRouter();
@@ -60,7 +62,7 @@ const CreatePost = () => {
               height={25}
               width={25}
             />
-            <span>Choose Topic</span>
+            <span>Choose Group</span>
             <Image
               className="ml-auto"
               src={"/images/arrowDown.svg"}
@@ -86,7 +88,6 @@ const CreatePost = () => {
               className="absolute left-3 top-[50%] transform -translate-y-1/2"
             />
           </div>
-          <Topics chooseTopic={chooseTopic} />
           <div className="flex gap-2 items-center mt-2 px-3 py-4">
             <div
               onClick={() => setSelectedPostType("Text")}
@@ -141,7 +142,7 @@ const CreatePost = () => {
           </div>
           {selectedPostType === "Text" && (
             <div className="mt-2 px-3 py-4">
-              <TextEditor />
+              <TextEditor onChange={()=>{}} />
             </div>
           )}
           {selectedPostType === "Images & videos" && (
