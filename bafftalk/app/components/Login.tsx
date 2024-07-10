@@ -1,23 +1,21 @@
-"use client"
+"use client";
 import Link from "next/link";
 import React from "react";
+interface loginProps {
+  close: () => void;
+  message?: string;
+}
 
-const Login = ({ close }: { close: () => void }) => {
-  const googleLogin = async () =>{
+const Login: React.FC<loginProps> = ({ close, message }) => {
+  const googleLogin = async () => {
     try {
-      
       window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
-      
-
-    }
-    catch(error){
+    } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
   const handleLogIn = async () => {
     try {
-
       const response = await fetch("/api/auth", {
         method: "GET",
       });
@@ -33,7 +31,9 @@ const Login = ({ close }: { close: () => void }) => {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white relative md:rounded-[20px] h-screen w-screen md:h-[80%] md:w-[55%] lg:w-[45%] xl:w-[35%]  flex flex-col">
-        <div className="font-bold text-black text-2xl p-5 mt-5 ">Log in</div>
+        <div className="font-bold text-black text-2xl p-5 mt-5 ">
+          {message ? message : "Log in to bafftalk"}
+        </div>
         <button onClick={close} className="absolute top-4 right-4 text-2xl">
           &times;
         </button>
@@ -49,7 +49,10 @@ const Login = ({ close }: { close: () => void }) => {
           </Link>
         </p>
         <div className="flex flex-col justify-center items-center">
-          <button onClick={googleLogin} className="flex items-center mt-3 w-[90%] bg-white dark:bg-gray-900 border border-gray-300 rounded-[25px] shadow-md px-6 py-2 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+          <button
+            onClick={googleLogin}
+            className="flex items-center mt-3 w-[90%] bg-white dark:bg-gray-900 border border-gray-300 rounded-[25px] shadow-md px-6 py-2 text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
             <svg
               className="h-6 w-6 mr-2"
               xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +111,10 @@ const Login = ({ close }: { close: () => void }) => {
             <span>Continue with Google</span>
           </button>
           <span className="text-gray-400 font-bold text-2xl mt-3 mb-2">OR</span>
-          <form onSubmit={handleLogIn} className="px-6 py-2 flex flex-col w-full">
+          <form
+            onSubmit={handleLogIn}
+            className="px-6 py-2 flex flex-col w-full"
+          >
             <input
               className="border bg-gray-300 w-full rounded-[25px] px-6 py-2 font-medium mb-3"
               type="text"
@@ -131,8 +137,8 @@ const Login = ({ close }: { close: () => void }) => {
               </span>
             </div>
             <button className="border rounded-[25px] w-full items-center px-6 py-2 wf bg-gray-200">
-                Log in
-              </button>
+              Log in
+            </button>
           </form>
         </div>
       </div>

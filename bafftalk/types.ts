@@ -4,7 +4,8 @@ export interface Group {
     description:string,
     maker:string,
     topic:string,
-    members:[any]
+    members:[any],
+    groupCoverImage?:string
     rules:[Rule]
 }
 export interface Rule {

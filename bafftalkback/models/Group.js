@@ -14,6 +14,12 @@ const GroupSchema = new mongoose.Schema(
       ref: "uploads.files",
       required: [true, "Group image is required"],
     },
+    groupCoverImage : {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "uploads.files",
+      required: false,
+      default : ''
+    },
     topic: {
       type: String,
       required: [true, "Topic is required"],

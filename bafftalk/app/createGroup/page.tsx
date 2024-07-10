@@ -361,7 +361,7 @@ const CreateGroup = () => {
                 <div className="w-full h-full flex flex-col items-center justify-center">
                   <label htmlFor="fileInput" className="cursor-pointer ">
                     <div className="flex gap-2 items-center">
-                      <h1>Choose file</h1>{" "}
+                      <h1>Upload Group Image</h1>{" "}
                       <Image
                         src={"/icons/upload.svg"}
                         alt="upload"
@@ -376,6 +376,30 @@ const CreateGroup = () => {
                       onChange={handleFileChange}
                     ></input>
                   </label>
+                  
+                </div>
+              </div>
+              <label className="p-2 font-bold">Group cover Image (Be sure to provide a high quality picture)</label>
+              <div className="mt-2 h-[100px] p-2 border border-gray-200 rounded-[15px] flex flex-col items-center justify-center">
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <label htmlFor="fileInput" className="cursor-pointer ">
+                    <div className="flex gap-2 items-center">
+                      <h1>Upload Cover Image</h1>{" "}
+                      <Image
+                        src={"/icons/upload.svg"}
+                        alt="upload"
+                        width={25}
+                        height={25}
+                      />
+                    </div>
+                    <input
+                      id="fileInput"
+                      className="hidden"
+                      type="file"
+                      onChange={handleFileChange}
+                    ></input>
+                  </label>
+                  
                 </div>
               </div>
             </>

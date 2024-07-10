@@ -25,5 +25,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/profile", "/createPost", "/createGroup"],
+  matcher: ["/profile", "/createPost", "/createGroup", "/group/:id*"],
 };

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import Loading from "./loading";
 
 const GroupHeader = ({ group }: { group: Group | undefined }) => {
   const [loading, setLoading] = useState(true);
@@ -17,22 +18,35 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
   }, [GlobalUser]);
 
   if (loading) {
-    return <>
-    Loading</>; // or render a loading indicator while GlobalUser is loading
+    return <div className="flex flex-col items-center justify-center">
+    <Loading type="spin" color="black" />
+    </div>; // or render a loading indicator while GlobalUser is loading
   }
   return (
     <div className="md:h-[180px] w-full ">
       <div className="relative w-full">
-        <Image
+        {group?.groupCoverImage && group?.groupCoverImage!=='' ? (
+          <Image
           className="object-cover w-[98%] h-[90px] md:h-[160px] rounded-[15px] "
           loader={() =>
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/photo/${group?._id}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/coverphoto/${group?._id}`
           }
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/photo/${group?._id}`}
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/coverphoto/${group?._id}`}
           height={3000}
           width={3000}
           alt="cover"
         />
+        ): (
+          <Image
+          className="object-cover w-[98%] h-[90px] md:h-[160px] rounded-[15px] "
+          
+          src={"/images/cover.jpg"}
+          height={3000}
+          width={3000}
+          alt="cover"
+        />
+        )}
+        
         <div className=" absolute bottom-[-55px] flex items-center w-full bg-[transparent] ">
           <Image
             className=" rounded-full object-cover h-[50px] w-[50px] md:h-[100px] md:w-[100px] "
