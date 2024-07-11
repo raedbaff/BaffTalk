@@ -136,6 +136,21 @@ exports.fetchAllGroups = async (req, res) => {
     res.status(500).json(error);
   }
 };
+exports.fetchGroupsByTopic = async(req,res) => {
+  try {
+    const { topic } = req.params;
+    const groups = await Group.find({ topic });
+    if (!groups) {
+      res.status(404).json({ error: "No groups found" });
+    }
+    res.status(200).json(groups);
+  }
+  catch(error) {
+    console.log(error);
+    res.status(500).json(error);
+  
+  }
+}
 exports.fetchPopularGroups = async (req, res) => {
   try {
     const topGroups = await Group.aggregate([

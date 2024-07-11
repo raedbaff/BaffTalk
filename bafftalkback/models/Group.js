@@ -14,11 +14,11 @@ const GroupSchema = new mongoose.Schema(
       ref: "uploads.files",
       required: [true, "Group image is required"],
     },
-    groupCoverImage : {
+    groupCoverImage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "uploads.files",
       required: false,
-      default : ''
+      default: "",
     },
     topic: {
       type: String,
@@ -46,7 +46,7 @@ const GroupSchema = new mongoose.Schema(
         description: {
           type: String,
           required: [true, "Rule description is required"],
-          min:[10,"Description must be at least 10 characters long"]
+          min: [10, "Description must be at least 10 characters long"],
         },
       },
     ],

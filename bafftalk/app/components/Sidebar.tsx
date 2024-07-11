@@ -1,15 +1,25 @@
+"use client";
 import Image from "next/image";
 import React from "react";
 import { topics } from "../../data";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
+  const pathname = usePathname();
+
   return (
     <div className="hidden lg:flex flex-col w-[250px] fixed top-[47px] left-0 h-[calc(100vh-47px)] bg-white shadow-md overflow-auto">
       <div className="mt-2 p-2 mb-2">
-        <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer bg-gray-200 border-none rounded-[10px]">
+        <Link
+          href={"/"}
+          className={`flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ${
+            pathname === "/" && "bg-gray-200"
+          }  border-none rounded-[10px]`}
+        >
           <Image src={"/images/home.svg"} width={20} height={20} alt="home" />
           Home
-        </div>
+        </Link>
         <div className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ">
           <Image
             src={"/images/explore.svg"}
@@ -19,6 +29,20 @@ const Sidebar = () => {
           />
           Popular
         </div>
+        <Link
+          href={"/groups"}
+          className={`flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ${
+            pathname === "/groups" && "bg-gray-200"
+          }`}
+        >
+          <Image
+            src={"/images/groups.svg"}
+            width={20}
+            height={20}
+            alt="explore"
+          />
+          Groups
+        </Link>
         <hr className="border-t-1 border-gray-300 my-0 w-full mt-2"></hr>
       </div>
       <div className="mt-2 p-2 mb-2">
@@ -26,13 +50,14 @@ const Sidebar = () => {
           <span className="text-gray-400 p-2 ml-3">Topics</span>
         </div>
         {topics.map((topic) => (
-          <div
+          <Link
+            href={`/groups/${topic.name}`}
             key={topic.name}
-            className="flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer "
+            className={`flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ${pathname === `/groups/${topic.name}` && "bg-gray-200"}`}
           >
             <Image src={topic.photo} width={20} height={20} alt="home" />
             {topic.name}
-          </div>
+          </Link>
         ))}
         <hr className="border-t-1 border-gray-300 my-0 w-full mt-2"></hr>
       </div>
