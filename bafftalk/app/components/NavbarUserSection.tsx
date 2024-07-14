@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import Loading from "./loading";
 
 const NavbarUserSection = () => {
-  const { GlobalUser,loading } = useAuth();
+  const { GlobalUser,loading,GlobalUserError } = useAuth();
   
 
   const [open, setOpen] = useState(false);

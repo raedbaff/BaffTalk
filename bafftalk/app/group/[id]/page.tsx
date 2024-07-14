@@ -12,7 +12,7 @@ const GroupDetails = ({ params }: { params: { id: string } }) => {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/${params.id}`
       );
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json(); 
         setgroup(data);
       }
     } catch (error) {

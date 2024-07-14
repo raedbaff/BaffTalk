@@ -4,7 +4,7 @@ import React from "react";
 const Success = ({message,closeModal}:{message:string,closeModal:()=>void}) => {
   return (
     <div className="fixed bg-black bg-opacity-50 z-[60] inset-0 flex flex-col items-center justify-center">
-      <div className="bg-white h-[45%] w-[80%] md:h-[40%] md:w-[60%] lg:h-[35%] lg:w-[50%] xl:h-[30%] xl:w-[40%] flex flex-col ">
+      <div className="bg-white h-[45%] w-[80%] md:h-[40%] md:w-[60%] lg:h-[35%] lg:w-[50%] xl:h-[30%] xl:w-[40%] flex flex-col animate-scaleUp ">
         <div className="h-[40%] bg-orange-500 flex flex-col items-center justify-center">
           <Image src={"/images/success.svg"} height={60} width={60} alt="success" />
         </div>

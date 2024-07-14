@@ -43,6 +43,20 @@ const Sidebar = () => {
           />
           Groups
         </Link>
+        <Link
+          href={"/joinedGroups"}
+          className={`flex items-center p-2 ml-3 gap-1 mb-1 cursor-pointer ${
+            pathname === "/joinedGroups" && "bg-gray-200"
+          }`}
+        >
+          <Image
+            src={"/images/myGroup.svg"}
+            width={20}
+            height={20}
+            alt="explore"
+          />
+          Joined Groups
+        </Link>
         <hr className="border-t-1 border-gray-300 my-0 w-full mt-2"></hr>
       </div>
       <div className="mt-2 p-2 mb-2">

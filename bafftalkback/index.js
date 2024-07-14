@@ -9,7 +9,7 @@ require("./middleware/db")
 const userRoutes = require("./routes/userRoutes");
 const fileRoutes = require("./routes/fileRoutes");
 const groupRoutes = require("./routes/groupRoutes")
-const animalRoutes = require("./routes/animalRoutes")
+const postRoutes = require("./routes/postRoutes")
 
 dotenv.config();
 const app = express();
@@ -40,7 +40,7 @@ app.use(
 app.use(userRoutes);
 app.use(fileRoutes);
 app.use(groupRoutes);
-app.use(animalRoutes);
+app.use(postRoutes);
 
 app.get("/", (req, res) => {
   res.send('<a href="/auth/google">Connect with google</a>');

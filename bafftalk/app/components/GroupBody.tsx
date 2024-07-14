@@ -29,17 +29,17 @@ const GroupBody = ({ group }: { group: Group | undefined }) => {
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1 p-2">
             Members
-            <strong>{group?.members.length} </strong>
+            <strong>{group?.members?.length} </strong>
           </div>
           <div className="flex flex-col gap-1 p-2">
             <span className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-green-500"></div>Online
             </span>
-            <strong>{group?.members.length} </strong>
+            <strong>{group?.members?.length} </strong>
           </div>
           <div className="flex flex-col gap-1 p-2">
             Rank by size
-            <strong>{group?.members.length} </strong>
+            <strong>{group?.members?.length} </strong>
           </div>
         </div>
         <div className="w-full border border-gray-200"></div>

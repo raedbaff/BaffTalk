@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Loading from "./loading";
+import ConfirmBox from "./ConfirmBox";
 
 const GroupHeader = ({ group }: { group: Group | undefined }) => {
   const [loading, setLoading] = useState(true);
+  const [showConfirmDelete, setshowConfirmDelete] = useState(false);
   const { GlobalUser } = useAuth();
   const router = useRouter();
   useEffect(() => {
@@ -17,36 +19,67 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
     }
   }, [GlobalUser]);
 
+  const deleteGroup = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/${group?._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        setshowConfirmDelete(false);
+        router.push("/");
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (loading) {
-    return <div className="flex flex-col items-center justify-center">
-    <Loading type="spin" color="black" />
-    </div>; // or render a loading indicator while GlobalUser is loading
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <Loading type={} color="black" />
+      </div>
+    ); // or render a loading indicator while GlobalUser is loading
   }
   return (
     <div className="md:h-[180px] w-full ">
+      {showConfirmDelete && (
+        <ConfirmBox
+          message="Are you sure you want to delete this group ?"
+          closeModal={() => {
+            setshowConfirmDelete(false);
+          }}
+          deleteGroup={deleteGroup}
+        />
+      )}
       <div className="relative w-full">
-        {group?.groupCoverImage && group?.groupCoverImage!=='' ? (
+        {group?.groupCoverImage && group?.groupCoverImage !== "" ? (
           <Image
-          className="object-cover w-[98%] h-[90px] md:h-[160px] rounded-[15px] "
-          loader={() =>
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/coverphoto/${group?._id}`
-          }
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/coverphoto/${group?._id}`}
-          height={3000}
-          width={3000}
-          alt="cover"
-        />
-        ): (
+            className="object-cover w-[98%] h-[90px] md:h-[160px] rounded-[15px] "
+            loader={() =>
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/coverphoto/${group?._id}`
+            }
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/coverphoto/${group?._id}`}
+            height={3000}
+            width={3000}
+            alt="cover"
+          />
+        ) : (
           <Image
-          className="object-cover w-[98%] h-[90px] md:h-[160px] rounded-[15px] "
-          
-          src={"/images/cover.jpg"}
-          height={3000}
-          width={3000}
-          alt="cover"
-        />
+            className="object-cover w-[98%] h-[90px] md:h-[160px] rounded-[15px] "
+            src={"/images/cover.jpg"}
+            height={3000}
+            width={3000}
+            alt="cover"
+          />
         )}
-        
+
         <div className=" absolute bottom-[-55px] flex items-center w-full bg-[transparent] ">
           <Image
             className=" rounded-full object-cover h-[50px] w-[50px] md:h-[100px] md:w-[100px] "
@@ -79,13 +112,13 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
             {group?.maker === GlobalUser?._id ? (
               <button
                 onClick={() => {
-                  router.push("/createPost");
+                  setshowConfirmDelete(true);
                 }}
                 className="ml-auto px-3 py-[6px] text-white text-xs md:text-lg bg-red-600 rounded-[20px] flex items-center border border-gray-600"
               >
                 Delete
               </button>
-            ) : group?.members.includes(GlobalUser?._id) ? (
+            ) : group?.members?.includes(GlobalUser?._id) ? (
               <button
                 onClick={() => {
                   router.push("/createPost");

@@ -2,40 +2,48 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Comment from "./Comment";
+import { PostType } from "@/types";
 
-type Post = {
-  id: number;
-  userImage: string;
-  username: string;
-  postDescription: string;
-  date: string;
-  postImage: string;
-  likes: number;
-  comments: number;
-};
-const Post = ({ post }: { post: Post }) => {
+const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
+  console.log(loading);
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    timeZoneName: "short",
+  };
   const [sortBy, setSortBy] = useState("New");
   const [sort, setSort] = useState(false);
   const [openComments, setOpenComments] = useState(false);
+  post.createdAt = new Date(post.createdAt).toLocaleDateString();
 
   const handleSort = (sortType: string) => {
     setSortBy(sortType);
     setSort(false);
   };
   return (
-    <div className="flex flex-col w-full h-auto">
+    <div className="flex flex-col w-full h-auto hover:bg-gray-50 rounded-[20px] cursor-pointer ">
       {/* header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center p-2">
         <div className="flex items-center justify-between gap-1">
           <Image
-            src={post.userImage}
+            loader={() => post?.maker?.avatar}
+            src={post?.maker?.avatar}
             width={30}
             height={30}
             alt="peter"
             className="rounded-full"
           />
-          <strong className="text-sm">{post.username}</strong>
-          <span className="text-gray-400 text-sm">{post.date}</span>
+          <div className="flex flex-col ">
+            <strong className="text-sm">{post?.maker?.username}</strong>
+            <strong className="text-[12px] text-gray-600">
+              {post?.group?.name}
+            </strong>
+          </div>
+          <span className="text-gray-400 text-sm">{post?.createdAt}</span>
         </div>
         {/* Move the button container to the end */}
         <div className="ml-auto flex gap-1">
@@ -47,10 +55,17 @@ const Post = ({ post }: { post: Post }) => {
       </div>
       {/* post desc and photo */}
       <div className="flex flex-col gap-2">
-        <p className="mt-2 px-2">{post.postDescription}</p>
+        <div className="flex flex-col mx-2 my-1">
+          <span className="text-xl font-extrabold">{post?.title} </span>
+          <p className="">{post.description}</p>
+        </div>
+
         <div className="relative h-[500px]">
           <Image
-            src={post.postImage}
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/post/photo/${post?._id}`}
+            loader={() =>
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/post/photo/${post?._id}`
+            }
             layout="fill"
             objectFit="cover"
             alt="post"
@@ -67,7 +82,7 @@ const Post = ({ post }: { post: Post }) => {
               alt="upvote"
               className="cursor-pointer"
             />
-            <strong className="text-sm">{post.likes} </strong>
+            <strong className="text-sm">5 </strong>
             <Image
               src={"/images/downvote.svg"}
               height={20}
@@ -76,14 +91,17 @@ const Post = ({ post }: { post: Post }) => {
               className="cursor-pointer"
             />
           </div>
-          <div onClick={()=>setOpenComments(true)} className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer ">
+          <div
+            onClick={() => setOpenComments(true)}
+            className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer "
+          >
             <Image
               src={"/images/comment.svg"}
               height={20}
               width={20}
               alt="upvote"
             />
-            <strong className="text-sm">{post.comments} </strong>
+            <strong className="text-sm">6 </strong>
           </div>
           <div className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer ">
             <Image
@@ -180,8 +198,6 @@ const Post = ({ post }: { post: Post }) => {
           <Comment />
         </div>
       )}
-
-      <hr className="border-t-1 border-gray-300 my-2 w-full"></hr>
     </div>
   );
 };

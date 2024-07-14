@@ -4,7 +4,6 @@ const Animal = require("../models/animal");
 exports.getAll = async (req, res) => {
   try {
     const animals = await Animal.find({});
-    console.log(animals);
     if (!animals) {
       res.status(404).json({ message: "no animals found" });
     }

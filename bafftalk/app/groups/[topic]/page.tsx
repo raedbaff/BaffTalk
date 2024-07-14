@@ -9,7 +9,7 @@ const SpecificGroups = ({ params }: { params: { topic: string } }) => {
   const fetchGroups = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/${params.topic}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/topic/${params.topic}`
       );
       const data = await response.json();
       setGroups(data);
@@ -48,7 +48,7 @@ const SpecificGroups = ({ params }: { params: { topic: string } }) => {
                 image={`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/photo/${group?._id}`}
                 groupName={group?.name}
                 groupCategory={group?.topic}
-                groupMembers={group?.members.length}
+                groupMembers={group?.members?.length}
                 link={`/group/${group?._id}`}
               />
             ))}

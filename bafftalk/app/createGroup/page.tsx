@@ -20,17 +20,24 @@ const CreateGroup = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [maker, setMaker] = useState(GlobalUser?._id);
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [noNameError, setnoNameError] = useState(false);
   const [noDescError, setnoDescError] = useState(false);
   const [noTopicError, setnoTopicError] = useState(false);
+  const [noPhotoError, setnoPhotoError] = useState(false);
   const [success, setsuccess] = useState(false);
   const [successMessage, setsuccessMessage] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const [numberOfRules, setNumberOfRules] = useState(0);
   const [rules, setRules] = useState<Rule[]>([]);
   const handleFileChange = (e: React.ChangeEvent<any>) => {
+
     setPhoto(e.target.files[0]);
+  };
+  const handleCoverFileChange = (e: React.ChangeEvent<any>) => {
+
+    setCoverPhoto(e.target.files[0]);
   };
   const handlebutton = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -77,7 +84,6 @@ const CreateGroup = () => {
     const count = parseInt(e.target.value || 0);
     setNumberOfRules(count);
     const newRules: Rule[] = [];
-    console.log(numberOfRules);
 
     for (let i = 0; i < count; i++) {
       newRules.push({
@@ -93,30 +99,44 @@ const CreateGroup = () => {
     index: number
   ) => {
     const updatedRules = [...rules];
-    console.log(updatedRules);
 
-    updatedRules[index - 1][field] = value;
-    console.log(updatedRules);
-  };
+    updatedRules[index -1] = {
+      ...updatedRules[index - 1],
+      [field]: value,
+    };
+    setRules(updatedRules)
+
+    }
+
   const handleSubmit = async (e: any) => {
     try {
       e.preventDefault();
       if (!name) {
         setnoNameError(true);
         setTimeout(() => {
+          setisLoading(false);
           setnoNameError(false);
         }, 2000);
       }
       if (!description) {
         setnoDescError(true);
         setTimeout(() => {
+          setisLoading(false);
           setnoDescError(false);
         }, 2000);
       }
       if (!topic) {
         setnoTopicError(true);
         setTimeout(() => {
+          setisLoading(false);
           setnoTopicError(false);
+        }, 2000);
+      }
+      if (!photo) {
+        setnoPhotoError(true);
+        setTimeout(() => {
+          setisLoading(false);
+          setnoPhotoError(false);
         }, 2000);
       }
       setisLoading(true);
@@ -125,12 +145,15 @@ const CreateGroup = () => {
       formdata.append("name", name);
       formdata.append("description", description);
       if (photo) {
-        formdata.append("file", photo);
+        formdata.append("groupImage", photo);
+      }
+      if (coverPhoto) {
+        formdata.append("groupCoverImage", coverPhoto);
       }
       formdata.append("topic", topic);
       formdata.append("maker", maker);
       formdata.append("rules", JSON.stringify(rules));
-
+      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/group`,
         {
@@ -138,6 +161,7 @@ const CreateGroup = () => {
           body: formdata,
         }
       );
+      
       if (response.ok) {
         const data = await response.json();
         console.log(data);
@@ -145,6 +169,7 @@ const CreateGroup = () => {
         setsuccess(true);
         setsuccessMessage("You have successfully created a new group");
       }
+      
     } catch (error) {
       console.log(error);
     }
@@ -326,6 +351,7 @@ const CreateGroup = () => {
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-600 hover:bg-gray-200 rounded-[15px]"
                   type="text"
+                  value={name}
                   placeholder="Group title *"
                 ></input>
                 <div className="absolute right-3 bottom-[-5px] text-[12px] ">
@@ -359,7 +385,7 @@ const CreateGroup = () => {
               <label className="p-2 font-bold">Group Image</label>
               <div className="mt-2 h-[100px] p-2 border border-gray-200 rounded-[15px] flex flex-col items-center justify-center">
                 <div className="w-full h-full flex flex-col items-center justify-center">
-                  <label htmlFor="fileInput" className="cursor-pointer ">
+                  <label htmlFor="GroupPhoto" className="cursor-pointer ">
                     <div className="flex gap-2 items-center">
                       <h1>Upload Group Image</h1>{" "}
                       <Image
@@ -369,20 +395,40 @@ const CreateGroup = () => {
                         height={25}
                       />
                     </div>
+                    {photo && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-600 font-bold">
+                          {photo?.name}
+                        </span>
+                        <Image
+                          src={"/images/greenTick.svg"}
+                          alt="greenTick"
+                          width={20}
+                          height={20}
+                        />
+                      </div>
+                    )}
+
                     <input
-                      id="fileInput"
+                      id="GroupPhoto"
                       className="hidden"
                       type="file"
                       onChange={handleFileChange}
                     ></input>
                   </label>
-                  
                 </div>
+                {noPhotoError && (
+                  <span className="px-3 py-2 text-red-600 font-bold">
+                    Please provide group image
+                  </span>
+                )}
               </div>
-              <label className="p-2 font-bold">Group cover Image (Be sure to provide a high quality picture)</label>
+              <label className="p-2 font-bold">
+                Group cover Image (Be sure to provide a high quality picture)
+              </label>
               <div className="mt-2 h-[100px] p-2 border border-gray-200 rounded-[15px] flex flex-col items-center justify-center">
                 <div className="w-full h-full flex flex-col items-center justify-center">
-                  <label htmlFor="fileInput" className="cursor-pointer ">
+                  <label htmlFor="coverPhoto" className="cursor-pointer ">
                     <div className="flex gap-2 items-center">
                       <h1>Upload Cover Image</h1>{" "}
                       <Image
@@ -392,14 +438,26 @@ const CreateGroup = () => {
                         height={25}
                       />
                     </div>
+                    {coverPhoto && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-600 font-bold">
+                          {coverPhoto?.name}
+                        </span>
+                        <Image
+                          src={"/images/greenTick.svg"}
+                          alt="greenTick"
+                          width={20}
+                          height={20}
+                        />
+                      </div>
+                    )}
                     <input
-                      id="fileInput"
+                      id="coverPhoto"
                       className="hidden"
                       type="file"
-                      onChange={handleFileChange}
+                      onChange={handleCoverFileChange}
                     ></input>
                   </label>
-                  
                 </div>
               </div>
             </>
@@ -412,6 +470,7 @@ const CreateGroup = () => {
                   min={0}
                   className="px-4 py-2 rounded-[20px] bg-gray-50 border border-black"
                   type="number"
+                  value={numberOfRules}
                   placeholder="number of rules"
                 ></input>
               </div>
@@ -428,6 +487,7 @@ const CreateGroup = () => {
                       onChange={(e) => {
                         handleRuleChange("name", e.target.value, value);
                       }}
+                      value={rules[value -1]?.name}
                       className="px-4 py-2 rounded-[15px] bg-gray-50 border border-black"
                       type="text"
                       placeholder="Rule name"
@@ -436,9 +496,11 @@ const CreateGroup = () => {
                       onChange={(e) =>
                         handleRuleChange("description", e.target.value, value)
                       }
+                      value={rules[value -1]?.description}
                       className="px-4 py-2 rounded-[15px] bg-gray-50 border border-black"
                       placeholder="Rule description"
-                    ></textarea>
+                    >
+                    </textarea>
                   </div>
                 ))}
               </div>

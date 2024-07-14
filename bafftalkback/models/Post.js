@@ -14,10 +14,6 @@ const PostSchema = new mongoose.Schema(
       ref: "uploads.files",
       required:false
     },
-    topic: {
-      type: String,
-      required: [true, "Topic is required"],
-    },
     maker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

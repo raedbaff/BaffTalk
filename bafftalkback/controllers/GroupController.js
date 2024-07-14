@@ -1,6 +1,23 @@
 const { Readable } = require("stream");
+
 const { getBucket } = require("../middleware/db");
 const Group = require("../models/Group");
+
+const deleteFilesFromBucket = async (filesId) => {
+  return new Promise((resolve, reject) => {
+    const bucket = getBucket();
+    if (!bucket) {
+      return reject("Bucket is not initialized");
+    }
+    try {
+      bucket.delete(filesId);
+      resolve();
+    } catch (error) {
+      console.log("there is an error bro ", error);
+      return reject(error);
+    }
+  });
+};
 
 exports.createGroup = async (req, res) => {
   try {
@@ -18,9 +35,6 @@ exports.createGroup = async (req, res) => {
     if (!name || !description || !topic || !maker) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-
-    console.log(req.files.groupImage);
-    console.log(req.files.groupCoverImage);
 
     const uploadFileToBucket = async (file) => {
       return new Promise((resolve, reject) => {
@@ -62,6 +76,7 @@ exports.createGroup = async (req, res) => {
       topic,
       maker,
     });
+
     if (groupCoverImageId) {
       newGroup.groupCoverImage = groupCoverImageId;
     }
@@ -69,7 +84,6 @@ exports.createGroup = async (req, res) => {
       newGroup.rules = JSON.parse(rules);
     }
     newGroup.members.push(maker);
-    console.log(newGroup);
 
     await newGroup.save();
     res.status(201).json({ newGroup });
@@ -136,7 +150,7 @@ exports.fetchAllGroups = async (req, res) => {
     res.status(500).json(error);
   }
 };
-exports.fetchGroupsByTopic = async(req,res) => {
+exports.fetchGroupsByTopic = async (req, res) => {
   try {
     const { topic } = req.params;
     const groups = await Group.find({ topic });
@@ -144,13 +158,11 @@ exports.fetchGroupsByTopic = async(req,res) => {
       res.status(404).json({ error: "No groups found" });
     }
     res.status(200).json(groups);
-  }
-  catch(error) {
+  } catch (error) {
     console.log(error);
     res.status(500).json(error);
-  
   }
-}
+};
 exports.fetchPopularGroups = async (req, res) => {
   try {
     const topGroups = await Group.aggregate([
@@ -206,11 +218,35 @@ exports.joinGroup = async (req, res) => {
 exports.deleteGroup = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const group = await Group.findById(id);
+    console.log(group);
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
     }
+    if (group.groupImage) {
+      await deleteFilesFromBucket(group.groupImage);
+    }
+    if (group.groupCoverImage) {
+      await deleteFilesFromBucket(group.groupCoverImage);
+    }
     await group.deleteOne();
+
+    return res.status(200).json({ success: "Group deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+exports.fetchJoinedGroups = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const joinedGroups = await Group.find({ members: { $in: [userId] } });
+
+    if (joinedGroups.length === 0) {
+      return res.status(404).json({ message: "No groups found" });
+    }
+    res.status(200).json(joinedGroups);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Something went wrong" });

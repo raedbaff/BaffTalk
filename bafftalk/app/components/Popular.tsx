@@ -15,12 +15,9 @@ const Popular = () => {
   const fetchPopularGroups = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/top3`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/popular/top3`
       );
       const data = await response.json();
-      console.log("your data");
-      console.log(data);
-
       setgroups(data);
     } catch (error) {
       console.log(error);
@@ -42,7 +39,8 @@ const Popular = () => {
     fetchPopularGroups();
   }, []);
   return (
-    <div className="hidden xl:flex flex-col w-[350px] fixed top-[47px] right-0 h-[calc(100vh-47px)] bg-white shadow-md">
+    GlobalUser && (
+      <div className="hidden xl:flex flex-col w-[350px] fixed top-[47px] right-0 h-[calc(100vh-47px)] bg-white shadow-md">
       <div className="bg-gray-200 rounded-[15px] mt-6 w-[80%] ml-3">
         <div className="text-gray-400 mb-3 px-4 mt-4 text-sm">
           POPULAR COMMUNITIES
@@ -83,6 +81,8 @@ const Popular = () => {
       </div>
       {openLogin && <Login close={handleClose} message="Please login to continue " />}
     </div>
+    )
+    
   );
 };
 

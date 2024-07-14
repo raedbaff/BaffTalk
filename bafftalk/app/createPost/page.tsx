@@ -1,25 +1,47 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import Topics from "../components/Topic";
 import TextEditor from "../components/TextEditor";
 import { useRouter } from "next/navigation";
-import { topics } from "@/data";
 import Topic from "../components/Topic";
+import { useAuth } from "../context/AuthContext";
+import { Group } from "@/types";
+import Link from "next/link";
 
 const CreatePost = () => {
   const router = useRouter();
+  const { GlobalUser } = useAuth();
   const [selectedPostType, setSelectedPostType] = useState("Text");
   const [wordCount, setWordCount] = useState(0);
-  const [chooseTopic, setChooseTopic] = useState(false);
+  const [chooseGroup, setChooseGroup] = useState(false);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/joined/${GlobalUser?._id}`
+      );
+      if (response.status === 404 || response.status === 500) {
+        setGroups([]);
+      } else {
+        const data = await response.json();
+        setGroups(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchGroups();
+  }, [GlobalUser]);
   const handlebutton = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    setChooseTopic(true);
+    setChooseGroup(true);
   };
   const handleClickAnywhere = () => {
-    setChooseTopic(false);
+    setChooseGroup(false);
   };
-  const handleInputClick = (e: React.MouseEvent<HTMLElement>) => {
+  const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +55,9 @@ const CreatePost = () => {
     >
       <div className="p-6 flex flex-col ">
         <div className="flex items-center">
-          <strong className="text-2xl ">Create Post</strong>
+          <strong className="text-2xl ">
+            Create Post 
+          </strong>
           <button
             onClick={() => {
               router.push("/createGroup");
@@ -53,7 +77,7 @@ const CreatePost = () => {
           <button
             onClick={handlebutton}
             className={`px-2 py-1 border border-black rounded-[25px] bg-gray-200 flex items-center gap-2 ${
-              !chooseTopic ? "" : "hidden"
+              !chooseGroup ? "" : "hidden"
             }`}
           >
             <Image
@@ -72,22 +96,43 @@ const CreatePost = () => {
             />
           </button>
           <div
-            className={`relative w-[50%] ${chooseTopic ? "block" : "hidden"}`}
-            onClick={handleInputClick}
+            className={`relative w-[50%] ${chooseGroup ? "block" : "hidden"}`}
           >
             <input
+              disabled
               type="text"
-              placeholder="Search bafftalk"
+              placeholder="Group"
               className="rounded-[25px] bg-gray-200 py-2 pl-10 pr-4 w-full "
             />
             <Image
-              src={"/icons/search.svg"}
+              src={"/images/groups.svg"}
               width={20}
               height={20}
               alt="search"
               className="absolute left-3 top-[50%] transform -translate-y-1/2"
             />
           </div>
+          {chooseGroup && (
+            <div onClick={stopPropagation} className=" mt-2 w-[300px] shadow-lg z-50 border-black flex flex-col rounded-[10px]">
+              <div className="p-4">
+                  <strong>Joined Groups</strong>
+                {groups.length === 0 ? (
+                  <div className="px-2 py-2 text-gray-600 font-bold">no groups found, <Link href={"/groups"} className="text-red-600">Join some</Link>  </div>
+                ) : (
+                  groups.map((group) => (
+                    <div key={group?.name}>
+                      <Topic
+                        key={group.name}
+                        name={group.name}
+                        photo={`${process.env.NEXT_PUBLIC_BACKEND_URL}/group/photo/${group?._id}`}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-2 items-center mt-2 px-3 py-4">
             <div
               onClick={() => setSelectedPostType("Text")}
@@ -142,7 +187,7 @@ const CreatePost = () => {
           </div>
           {selectedPostType === "Text" && (
             <div className="mt-2 px-3 py-4">
-              <TextEditor onChange={()=>{}} />
+              <TextEditor onChange={() => {}} />
             </div>
           )}
           {selectedPostType === "Images & videos" && (
