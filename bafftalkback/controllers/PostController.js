@@ -77,3 +77,21 @@ exports.getPostPhoto = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getPostsByGroup = async (req, res) => {
+  try {
+    const { groupId} = req.params;
+    if (!groupId) {
+      return res.status(400).json({ error: "Group ID required" });
+    }
+
+    const posts = await Post.find({ group: groupId}).populate("maker")
+    if (!posts) {
+      return res.status(404).json({ error: "No posts found" });
+    }
+    res.status(200).json(posts);
+
+
+  } catch(error) {
+    res.status(500).json({ error: error.message });
+  }
+};

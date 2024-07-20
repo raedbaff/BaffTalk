@@ -3,9 +3,9 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Comment from "./Comment";
 import { PostType } from "@/types";
+import { useAuth } from "../context/AuthContext";
 
 const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
-  console.log(loading);
   const options = {
     year: "numeric",
     month: "long",
@@ -18,6 +18,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
   const [sortBy, setSortBy] = useState("New");
   const [sort, setSort] = useState(false);
   const [openComments, setOpenComments] = useState(false);
+  const { GlobalUser} = useAuth();
   post.createdAt = new Date(post.createdAt).toLocaleDateString();
 
   const handleSort = (sortType: string) => {
@@ -47,9 +48,17 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
         </div>
         {/* Move the button container to the end */}
         <div className="ml-auto flex gap-1">
-          <button className="rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold">
+          {post.maker?._id === GlobalUser?._id ? (
+            <button className={`rounded-[25px] bg-blue-600 hover:bg-blue-800
+             text-white px-2 text-[12px] font-bold`}>
+            Edit
+          </button>
+          ):(
+            <button className={`rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold`}>
             Join
           </button>
+          )}
+          
           <div>...</div>
         </div>
       </div>
@@ -92,7 +101,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
             />
           </div>
           <div
-            onClick={() => setOpenComments(true)}
+            onClick={() => setOpenComments((prev)=>!prev)}
             className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer "
           >
             <Image

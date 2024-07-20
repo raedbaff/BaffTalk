@@ -23,11 +23,19 @@ export interface Rule {
     description:string
 }
 export interface PostType {
-    _id:string,
+    _id?:string,
     title:string,
     description:string,
     maker:User,
-    group:Group,
+    group:Group ,
     postImage?:any,
-    createdAt:any,
+    createdAt?:any,
+}
+export interface FormPost {
+    title:string,
+    description:string,
+    maker:string | Blob,
+    group:string | Blob,
+    postImage?:any,
+    createdAt?:any,
 }

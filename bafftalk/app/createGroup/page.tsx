@@ -117,6 +117,7 @@ const CreateGroup = () => {
           setisLoading(false);
           setnoNameError(false);
         }, 2000);
+        return;
       }
       if (!description) {
         setnoDescError(true);
@@ -124,6 +125,7 @@ const CreateGroup = () => {
           setisLoading(false);
           setnoDescError(false);
         }, 2000);
+        return;
       }
       if (!topic) {
         setnoTopicError(true);
@@ -131,6 +133,7 @@ const CreateGroup = () => {
           setisLoading(false);
           setnoTopicError(false);
         }, 2000);
+        return;
       }
       if (!photo) {
         setnoPhotoError(true);
@@ -138,6 +141,7 @@ const CreateGroup = () => {
           setisLoading(false);
           setnoPhotoError(false);
         }, 2000);
+        return;
       }
       setisLoading(true);
 

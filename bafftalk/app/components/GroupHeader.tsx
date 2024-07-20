@@ -43,7 +43,7 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center">
-        <Loading type={} color="black" />
+        <Loading type={"spin"} color="black" />
       </div>
     ); // or render a loading indicator while GlobalUser is loading
   }

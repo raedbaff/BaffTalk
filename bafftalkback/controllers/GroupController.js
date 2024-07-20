@@ -2,6 +2,7 @@ const { Readable } = require("stream");
 
 const { getBucket } = require("../middleware/db");
 const Group = require("../models/Group");
+const Post = require("../models/Post");
 
 const deleteFilesFromBucket = async (filesId) => {
   return new Promise((resolve, reject) => {
@@ -252,3 +253,20 @@ exports.fetchJoinedGroups = async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 };
+exports.fetchGroupAndPosts = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+    const posts = await Post.find({ group:groupId}).populate("maker");
+    if (!posts) {
+      return res.status(404).json({ error: "No posts found" });
+    }
+    res.status(200).json({ group, posts });
+
+  } catch (error) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+}

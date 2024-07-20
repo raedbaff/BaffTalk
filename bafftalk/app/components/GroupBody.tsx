@@ -1,10 +1,10 @@
-import { Group } from "@/types";
+import { Group, PostType } from "@/types";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import Post from "./Post";
 
-const GroupBody = ({ group }: { group: Group | undefined }) => {
-  const [collapse, setCollapse] = useState(false);
+const GroupBody = ({ group,posts,loading }: { group: Group | undefined, posts:PostType[],loading:boolean }) => {
   const [collapsedItemId,setCollapsedItemId]=useState<Number[]>([])
   const { GlobalUser } = useAuth();
   const handleCollapse = (index:Number)=>{
@@ -21,9 +21,17 @@ const GroupBody = ({ group }: { group: Group | undefined }) => {
   }
 
   return (
-    <div className="mt-[50px] flex flex-col md:flex-row  ">
-      <div className="w-full md:flex-1 h-screen"></div>
-      <div className="w-full md:w-[25%] h-screen bg-gray-50 overflow-auto flex flex-col gap-1 p-2 mr-4">
+    <div className="mt-[60px] flex flex-col md:flex-row">
+      <div className="flex flex-col-reverse lg:flex-row gap-1 w-full">
+      <div className="w-full lg:w-[70%]">
+        {posts.map((post) => (
+          <div key={post?._id}>
+            <Post key={post._id} post={post} loading={loading} />
+            <hr className="border-t-1 border-gray-300 my-2 w-full"></hr>
+          </div>
+        ))}
+      </div>
+      <div className="w-full lg:w-[30%] bg-gray-50 overflow-auto flex flex-col gap-1 p-2 mr-4">
         <span className="font-bold text-md">{group?.name}</span>
         <p className="text-sm text-gray-700">{group?.description} </p>
         <div className="flex justify-between items-center">
@@ -106,6 +114,8 @@ const GroupBody = ({ group }: { group: Group | undefined }) => {
           )}
         </div>
       </div>
+      </div>
+      
     </div>
   );
 };

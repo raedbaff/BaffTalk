@@ -1,6 +1,6 @@
 const express = require("express");
 const { upload } = require("../middleware/db");
-const { createGroup,getPhoto, fetchAllGroups, fetchPopularGroups, fetchGroupById, joinGroup, getCoverPhoto, fetchGroupsByTopic,fetchJoinedGroups, deleteGroup } = require("../controllers/GroupController");
+const { createGroup,getPhoto, fetchAllGroups, fetchPopularGroups, fetchGroupById, joinGroup, getCoverPhoto, fetchGroupsByTopic,fetchJoinedGroups, deleteGroup, fetchGroupAndPosts } = require("../controllers/GroupController");
 const router = express.Router();
 
 router.post("/group", upload.fields([{ name: 'groupImage' }, { name: 'groupCoverImage' }]), createGroup);
@@ -13,5 +13,6 @@ router.get("/group/popular/top3",fetchPopularGroups)
 router.get("/group/:id",fetchGroupById)
 router.put("/group/:userId/:groupId",joinGroup)
 router.get("/group/joined/:userId",fetchJoinedGroups)
+router.get("/groupAndPosts/:groupId",fetchGroupAndPosts)
 
 module.exports = router;
