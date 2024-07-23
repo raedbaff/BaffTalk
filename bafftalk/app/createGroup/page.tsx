@@ -7,6 +7,12 @@ import { topics } from "../../data";
 import { useAuth } from "../context/AuthContext";
 import Success from "../components/Success";
 import { Rule } from "@/types";
+interface formError {
+  noNameError: boolean;
+  noDescError: boolean;
+  noTopicError: boolean;
+  noPhotoError: boolean;
+}
 
 const CreateGroup = () => {
   const { GlobalUser } = useAuth();
@@ -22,10 +28,12 @@ const CreateGroup = () => {
   const [maker, setMaker] = useState(GlobalUser?._id);
   const [photo, setPhoto] = useState<File | null>(null);
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
-  const [noNameError, setnoNameError] = useState(false);
-  const [noDescError, setnoDescError] = useState(false);
-  const [noTopicError, setnoTopicError] = useState(false);
-  const [noPhotoError, setnoPhotoError] = useState(false);
+  const [formError, setFormError] = useState<formError>({
+    noNameError: false,
+    noDescError: false,
+    noTopicError: false,
+    noPhotoError: false,
+  });
   const [success, setsuccess] = useState(false);
   const [successMessage, setsuccessMessage] = useState("");
   const [isLoading, setisLoading] = useState(false);
@@ -111,35 +119,36 @@ const CreateGroup = () => {
   const handleSubmit = async (e: any) => {
     try {
       e.preventDefault();
-      if (!name) {
-        setnoNameError(true);
+      if (!topic) {
+        setFormError({ ...formError, noTopicError: true });
         setTimeout(() => {
           setisLoading(false);
-          setnoNameError(false);
+          setFormError({ ...formError, noTopicError: false });
+        }, 2000);
+        return;
+      }
+      if (!name) {
+        setFormError({ ...formError, noNameError: true });
+        setTimeout(() => {
+          setisLoading(false);
+          setFormError({ ...formError, noNameError: false });
         }, 2000);
         return;
       }
       if (!description) {
-        setnoDescError(true);
+        setFormError({ ...formError, noDescError: true });
         setTimeout(() => {
           setisLoading(false);
-          setnoDescError(false);
+          setFormError({ ...formError, noDescError: false });
         }, 2000);
         return;
       }
-      if (!topic) {
-        setnoTopicError(true);
-        setTimeout(() => {
-          setisLoading(false);
-          setnoTopicError(false);
-        }, 2000);
-        return;
-      }
+      
       if (!photo) {
-        setnoPhotoError(true);
+        setFormError({ ...formError, noPhotoError: true });
         setTimeout(() => {
           setisLoading(false);
-          setnoPhotoError(false);
+          setFormError({ ...formError, noPhotoError: false });
         }, 2000);
         return;
       }
@@ -211,7 +220,7 @@ const CreateGroup = () => {
         <div className="mt-2 relative">
           <button
             onClick={handlebutton}
-            className={`px-2 py-1 border border-black rounded-[25px] bg-gray-200 flex items-center gap-2 ${
+            className={`px-2 py-1 border border-black ${formError.noTopicError && 'border-red-600'} rounded-[25px] bg-gray-200 flex items-center gap-2 ${
               !chooseTopic && topic === "" ? "" : "hidden"
             }`}
           >
@@ -230,8 +239,8 @@ const CreateGroup = () => {
               width={25}
             />
           </button>
-          {noTopicError && (
-            <span className="px-6 py-2 text-red-600 font-bold">
+          {formError.noTopicError && (
+            <span className="px-6 text-red-600">
               Please provide topic
             </span>
           )}
@@ -353,7 +362,7 @@ const CreateGroup = () => {
               <div className="flex gap-2 items-center mt-2 px-3 py-4 relative">
                 <input
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-600 hover:bg-gray-200 rounded-[15px]"
+                  className={`w-full p-2 border border-gray-600 ${formError.noNameError && 'border-red-600'} hover:bg-gray-200 rounded-[15px]`}
                   type="text"
                   value={name}
                   placeholder="Group title *"
@@ -362,22 +371,22 @@ const CreateGroup = () => {
                   {wordCount}/300
                 </div>
               </div>
-              {noNameError && (
-                <span className="px-6 py-2 text-red-600 font-bold">
+              {formError.noNameError && (
+                <span className="text-red-500 px-4">
                   Please provide title
                 </span>
               )}
               <div className="mt-2 px-3 py-4 flex flex-col  gap-2">
                 <label className="p-2 font-bold">Group description</label>
                 <textarea
-                  className="h-[150px] px-4 py-2 rounded-[20px] border border-black "
+                  className={`h-[150px] px-4 py-2 rounded-[20px] border border-black ${formError.noDescError && 'border-red-600'}`}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="description"
                   value={description}
                 />
 
-                {noDescError && (
-                  <span className="px-3 py-2 text-red-600 font-bold">
+                {formError.noDescError && (
+                  <span className="px-4 text-red-600">
                     Please provide description for your group
                   </span>
                 )}
@@ -421,7 +430,7 @@ const CreateGroup = () => {
                     ></input>
                   </label>
                 </div>
-                {noPhotoError && (
+                {formError.noPhotoError && (
                   <span className="px-3 py-2 text-red-600 font-bold">
                     Please provide group image
                   </span>

@@ -24,12 +24,23 @@ const GroupBody = ({ group,posts,loading }: { group: Group | undefined, posts:Po
     <div className="mt-[60px] flex flex-col md:flex-row">
       <div className="flex flex-col-reverse lg:flex-row gap-1 w-full">
       <div className="w-full lg:w-[70%]">
-        {posts.map((post) => (
-          <div key={post?._id}>
-            <Post key={post._id} post={post} loading={loading} />
-            <hr className="border-t-1 border-gray-300 my-2 w-full"></hr>
-          </div>
-        ))}
+        {posts.length === 0 ? (
+          <div className="flex flex-col gap-2 justify-center items-center h-full">
+          {" "}
+          <Image src={"/images/404.svg"} alt="404" width={60} height={60} />
+          <p className="font-bold text-3xl">
+            No posts in this group yet
+          </p>
+        </div>
+        ):(
+           posts.map((post) => (
+            <div key={post?._id}>
+              <Post key={post._id} post={post} loading={loading} />
+              <hr className="border-t-1 border-gray-300 my-2 w-full"></hr>
+            </div>
+          ))
+        )}
+       
       </div>
       <div className="w-full lg:w-[30%] bg-gray-50 overflow-auto flex flex-col gap-1 p-2 mr-4">
         <span className="font-bold text-md">{group?.name}</span>

@@ -176,7 +176,7 @@ const CreatePost = () => {
         <div className="mt-2 relative">
           <button
             onClick={handlebutton}
-            className={`px-2 py-1 border border-black rounded-[25px] bg-gray-200 flex items-center gap-2 ${
+            className={`px-2 py-1 border border-black ${formError.noGroupError && 'border-red-600'} rounded-[25px] bg-gray-200 flex items-center gap-2 ${
               !chooseGroup ? "" : "hidden"
             }`}
           >
@@ -196,7 +196,7 @@ const CreatePost = () => {
             />
           </button>
           {formError.noGroupError && (
-            <div className="text-red-500">Group is required</div>
+            <div className="text-red-500 px-4">Group is required</div>
           )}{" "}
           <div
             className={`relative w-[50%] ${chooseGroup ? "block" : "hidden"}`}
@@ -237,6 +237,7 @@ const CreatePost = () => {
                       onClick={(e) => {
                         setSelectedGroup(group?.name);
                         setPost({ ...post, group: group?._id });
+                        setChooseGroup(false);
                       }}
                     >
                       <Topic
@@ -295,7 +296,7 @@ const CreatePost = () => {
             <input
               onChange={handleChange}
               value={post.title}
-              className="w-full p-2 border border-gray-600 hover:bg-gray-200 rounded-[15px]"
+              className={`w-full p-2 border border-gray-600 ${formError.noTitleError && 'border-red-600'} hover:bg-gray-200 rounded-[15px]`}
               type="text"
               placeholder="Title *"
             ></input>
@@ -304,14 +305,14 @@ const CreatePost = () => {
             </div>
           </div>
           {formError.noTitleError && (
-            <div className="text-red-500">Title is required</div>
+            <div className="text-red-500 px-4">Title is required</div>
           )}
           {selectedPostType === "Text" && (
             <div className="mt-2 px-3 py-4 flex flex-col  gap-2">
               <label className="p-2 font-bold">Post description</label>
 
               <textarea
-                className="h-[150px] px-4 py-2 rounded-[20px] border border-black "
+                className={`h-[150px] px-4 py-2 rounded-[20px] border border-black ${formError.noDescriptionError && 'border-red-600'}`}
                 onChange={(e) =>
                   setPost({ ...post, description: e.target.value })
                 }
@@ -319,7 +320,7 @@ const CreatePost = () => {
                 value={post.description}
               />
               {formError.noDescriptionError && (
-                <div className="text-red-500">Description is required</div>
+                <div className="text-red-500 px-4">Description is required</div>
               )}
             </div>
           )}
