@@ -35,6 +35,12 @@ const PostSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref:"Upvote"
       }
+    ],
+    downvotes : [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Downvote"
+      }
     ]
   },
   { timestamps: true }

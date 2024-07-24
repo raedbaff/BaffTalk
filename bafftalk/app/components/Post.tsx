@@ -2,70 +2,237 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Comment from "./Comment";
-import { PostType } from "@/types";
+import { CommentInter, PostType } from "@/types";
 import { useAuth } from "../context/AuthContext";
+import calculateTime from "../utilityFunctions/calculateTime";
+import Login from "./Login";
 
 const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
- 
   const [sortBy, setSortBy] = useState("New");
   const [sort, setSort] = useState(false);
   const [openComments, setOpenComments] = useState(false);
-  const { GlobalUser} = useAuth();
-  post.createdAt = new Date(post.createdAt).toLocaleDateString();
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [updatedPost, setupdatedPost] = useState<PostType>(post);
+  const [comments, setComments] = useState<CommentInter[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [loggedOut, setLoggedOut] = useState(false);
+  const { GlobalUser } = useAuth();
 
   const handleSort = (sortType: string) => {
     setSortBy(sortType);
     setSort(false);
   };
+  const upvotePost = async () => {
+    try {
+      if (!GlobalUser) {
+        setLoggedOut(true);
+        document.body.style.overflow = "hidden";
+
+        return;
+      }
+
+      const upvote = {
+        post: updatedPost._id,
+        upvoter: GlobalUser._id,
+      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/upvotes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(upvote),
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message === "Upvote created") {
+          setupdatedPost((prevPost) => ({
+            ...prevPost,
+            upvotes: [...(prevPost.upvotes || []), GlobalUser?._id],
+            downvotes: prevPost.downvotes?.filter(
+              (downvoter) => downvoter !== GlobalUser?._id
+            ),
+          }));
+        } else {
+          setupdatedPost((prevPost) => ({
+            ...prevPost,
+            upvotes: prevPost.upvotes?.filter(
+              (upvoter) => upvoter !== GlobalUser?._id
+            ),
+          }));
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const downvotePost = async () => {
+    try {
+      if (!GlobalUser) {
+        setLoggedOut(true);
+        document.body.style.overflow = "hidden";
+
+        return;
+      }
+      const downvote = {
+        post: updatedPost._id,
+        downvoter: GlobalUser._id,
+      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/downvotes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(downvote),
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message === "Downvote created") {
+          setupdatedPost((prevPost) => ({
+            ...prevPost,
+            downvotes: [...(prevPost.downvotes || []), GlobalUser?._id],
+            upvotes: prevPost.upvotes?.filter(
+              (upvoter) => upvoter !== GlobalUser?._id
+            ),
+          }));
+        } else {
+          setupdatedPost((prevPost) => ({
+            ...prevPost,
+            downvotes: prevPost.downvotes?.filter(
+              (downvoter) => downvoter !== GlobalUser?._id
+            ),
+          }));
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchComments = async () => {
+    try {
+      setCommentsLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/comments/post/${updatedPost._id}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data.comments);
+        setCommentsLoading(false);
+      }
+    } catch (error) {
+      setCommentsLoading(false);
+      console.log(error);
+    }
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      if (!GlobalUser) {
+        setLoggedOut(true);
+        document.body.style.overflow = "hidden";
+
+        return;
+      }
+      const comment = {
+        content: newComment,
+        maker: GlobalUser?._id,
+        post: updatedPost?._id,
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(comment),
+        }
+      );
+      console.log(response);
+      if (response.ok) {
+        const data = await response.json();
+        await fetchComments();
+        setNewComment("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleClose = () => {
+    setLoggedOut(false);
+    document.body.style.overflow = "auto";
+  };
   return (
     <div className="flex flex-col w-full h-auto hover:bg-gray-50 rounded-[20px] cursor-pointer ">
+      {loggedOut && (
+        <Login
+          close={handleClose}
+          message="Please login to interact with posts !!"
+        />
+      )}
       {/* header */}
       <div className="flex justify-between items-center p-2">
         <div className="flex items-center justify-between gap-1">
           <Image
-            loader={() => post?.maker?.avatar}
-            src={post?.maker?.avatar}
+            loader={() => updatedPost?.maker?.avatar}
+            src={updatedPost?.maker?.avatar}
             width={30}
             height={30}
             alt="peter"
             className="rounded-full"
           />
           <div className="flex flex-col ">
-            <strong className="text-sm">{post?.maker?.username}</strong>
+            <div className="flex items-center gap-2">
+              <strong className="text-sm">
+                {updatedPost?.maker?.username}
+              </strong>
+              <span className="text-gray-400 text-sm">
+                {calculateTime(updatedPost?.createdAt.toString())}
+              </span>
+            </div>
             <strong className="text-[12px] text-gray-600">
-              {post?.group?.name}
+              {updatedPost?.group?.name}
             </strong>
           </div>
-          <span className="text-gray-400 text-sm">{post?.createdAt}</span>
         </div>
         {/* Move the button container to the end */}
         <div className="ml-auto flex gap-1">
-          {post.maker?._id === GlobalUser?._id ? (
-            <button className={`rounded-[25px] bg-blue-600 hover:bg-blue-800
-             text-white px-2 text-[12px] font-bold`}>
-            Edit
-          </button>
-          ):(
-            <button className={`rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold`}>
-            Join
-          </button>
+          {updatedPost.maker?._id === GlobalUser?._id ? (
+            <button
+              className={`rounded-[25px] bg-blue-600 hover:bg-blue-800
+             text-white px-2 text-[12px] font-bold`}
+            >
+              Edit
+            </button>
+          ) : (
+            <button
+              className={`rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold`}
+            >
+              Join
+            </button>
           )}
-          
+
           <div>...</div>
         </div>
       </div>
       {/* post desc and photo */}
       <div className="flex flex-col gap-2">
         <div className="flex flex-col mx-2 my-1">
-          <span className="text-xl font-extrabold">{post?.title} </span>
-          <p className="">{post.description}</p>
+          <span className="text-xl font-extrabold">{updatedPost?.title} </span>
+          <p className="">{updatedPost.description}</p>
         </div>
 
         <div className="relative h-[500px]">
           <Image
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/post/photo/${post?._id}`}
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/post/photo/${updatedPost?._id}`}
             loader={() =>
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/post/photo/${post?._id}`
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/post/photo/${updatedPost?._id}`
             }
             layout="fill"
             objectFit="cover"
@@ -75,25 +242,48 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
         </div>
 
         <div className="flex gap-2">
-          <div className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center  ">
+          <div
+            className={`rounded-[25px] bg-gray-300 ${
+              updatedPost.upvotes?.includes(GlobalUser?._id) && "bg-orange-600"
+            } ${
+              updatedPost.downvotes?.includes(GlobalUser?._id) &&
+              "bg-purple-600"
+            } flex gap-1 px-3 py-2 items-center`}
+          >
             <Image
-              src={"/images/upvote.svg"}
+              onClick={upvotePost}
+              src={
+                updatedPost.upvotes?.includes(GlobalUser?._id)
+                  ? "/images/upvoteSelected.svg"
+                  : "/images/upvote.svg"
+              }
               height={20}
               width={20}
               alt="upvote"
-              className="cursor-pointer"
+              className="cursor-pointer hover:transform hover:scale-150"
             />
-            <strong className="text-sm">{post.upvotes?.length} </strong>
+            <strong className="text-sm">
+              {(updatedPost.upvotes?.length || 0) -
+                (updatedPost.downvotes?.length || 0)}{" "}
+            </strong>
             <Image
-              src={"/images/downvote.svg"}
+              onClick={downvotePost}
+              src={
+                updatedPost.downvotes?.includes(GlobalUser?._id)
+                  ? "/images/downvoteSelected.svg"
+                  : "/images/downvote.svg"
+              }
               height={20}
               width={20}
               alt="downvote"
-              className="cursor-pointer"
+              className="cursor-pointer hover:transform hover:scale-150"
             />
           </div>
           <div
-            onClick={() => setOpenComments((prev)=>!prev)}
+            onClick={() => {
+              setOpenComments((prev) => !prev);
+              fetchComments();
+            }}
             className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer "
           >
             <Image
@@ -102,7 +292,9 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
               width={20}
               alt="upvote"
             />
-            <strong className="text-sm">{post.comments?.length} </strong>
+            <strong className="text-sm">
+              {updatedPost.comments?.length || 0}{" "}
+            </strong>
           </div>
           <div className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer ">
             <Image
@@ -117,11 +309,18 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
       </div>
       {openComments && (
         <div>
-          <input
-            className="w-full rounded-[20px] bg-gray-50 px-4 py-1 mt-2 border border-gray-400"
-            type="text"
-            placeholder="post a comment"
-          ></input>
+          <form onSubmit={handleSubmit}>
+            <input
+              className="w-full rounded-[20px] bg-gray-50 px-4 py-1 mt-2 border border-gray-400"
+              onChange={(e) => {
+                setNewComment(e.target.value);
+              }}
+              type="text"
+              placeholder="post a comment"
+              value={newComment}
+            ></input>
+          </form>
+
           <div className="flex items-center gap-2 mt-2">
             <div className="text-[12px] text-gray-600 px-2">Sort By : </div>
             <div className="relative">
@@ -195,8 +394,20 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
               />
             </div>
           </div>
-          <Comment />
-          <Comment />
+          {comments.length === 0 ? (
+            <div className="flex items-center justify-center h-[120px] ">
+              <strong>No Comments Yet, Be the first to comment</strong>
+            </div>
+          ) : (
+            comments.map((comment) => (
+              <Comment
+                key={comment._id}
+                user={GlobalUser}
+                comment={comment}
+                commentsLoading={commentsLoading}
+              />
+            ))
+          )}
         </div>
       )}
     </div>

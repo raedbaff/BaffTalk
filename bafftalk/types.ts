@@ -29,9 +29,10 @@ export interface PostType {
     maker:User,
     group:Group ,
     postImage?:any,
-    createdAt?:any,
+    createdAt:string | number | Date
     comments?:Array<string>,
     upvotes?:Array<string>,
+    downvotes?:Array<string>,
 }
 export interface FormPost {
     title:string,
@@ -39,5 +40,12 @@ export interface FormPost {
     maker:string | Blob,
     group:string | Blob,
     postImage?:any,
-    createdAt?:any,
+    createdAt:string | number | Date
+}
+export interface CommentInter {
+    _id:string,
+    content:string,
+    maker:User,
+    post:PostType,
+    createdAt:string | number | Date
 }

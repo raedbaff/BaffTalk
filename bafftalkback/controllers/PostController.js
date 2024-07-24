@@ -48,22 +48,22 @@ exports.createPost = async (req, res) => {
 exports.getPosts = async (req, res) => {
   try {
     const posts = await Post.aggregate([
-     {
-      $lookup: {
-        from: "users",
-        localField: "maker",
-        foreignField: "_id",
-        as: "maker",
+      {
+        $lookup: {
+          from: "users",
+          localField: "maker",
+          foreignField: "_id",
+          as: "maker",
+        },
       },
-     },
-     {
-      $lookup: {
-        from: "groups",
-        localField: "group",
-        foreignField: "_id",
-        as: "group",
+      {
+        $lookup: {
+          from: "groups",
+          localField: "group",
+          foreignField: "_id",
+          as: "group",
+        },
       },
-     },
       {
         $unwind: "$maker",
       },
@@ -71,17 +71,19 @@ exports.getPosts = async (req, res) => {
         $unwind: "$group",
       },
       {
-        $project : {
+        $project: {
           title: 1,
           description: 1,
           postImage: 1,
           maker: 1,
           group: 1,
           upvotes: 1,
+          downvotes: 1,
           comments: 1,
-        }
-       },
-    ])
+          createdAt: 1,
+        },
+      },
+    ]);
     if (!posts) {
       return res.status(404).json({ error: "No posts found" });
     }
@@ -113,19 +115,17 @@ exports.getPostPhoto = async (req, res) => {
 };
 exports.getPostsByGroup = async (req, res) => {
   try {
-    const { groupId} = req.params;
+    const { groupId } = req.params;
     if (!groupId) {
       return res.status(400).json({ error: "Group ID required" });
     }
 
-    const posts = await Post.find({ group: groupId}).populate("maker")
+    const posts = await Post.find({ group: groupId }).populate("maker");
     if (!posts) {
       return res.status(404).json({ error: "No posts found" });
     }
     res.status(200).json(posts);
-
-
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };

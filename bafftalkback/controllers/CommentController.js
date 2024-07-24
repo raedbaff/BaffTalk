@@ -17,7 +17,7 @@ exports.createComment = async (req, res) => {
     const relatedPost = await Post.findById(post);
     relatedPost.comments.push(newComment._id);
     await relatedPost.save();
-    res.status(200).json({ message: "successfully created Comment" });
+    res.status(200).json({ message: "successfully created Comment",comment:newComment });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -25,7 +25,7 @@ exports.createComment = async (req, res) => {
 exports.getComments = async (req, res) => {
   try {
     const comments = await Comment.find();
-    if (!comments) {
+    if (comments.length === 0) {
       return res.status(404).json({ message: "No comments found" });
     }
     res.status(200).json({ comments });
@@ -71,6 +71,25 @@ exports.EditComment = async (req, res) => {
     comment.content = content;
     await comment.save();
     res.status(200).json({ message: "Comment edited successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.getCommentsByPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    if (!postId) {
+      return res.status(400).json({ message: "postId is required" });
+    }
+
+    const comments = await Comment.find({ post: postId }).populate("maker");
+
+    if (comments.length === 0) {
+      return res.status(404).json({ message: "No comments found" });
+    }
+    res.status(200).json({ comments });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
