@@ -30,6 +30,8 @@ export interface PostType {
     group:Group ,
     postImage?:any,
     createdAt?:any,
+    comments?:Array<string>,
+    upvotes?:Array<string>,
 }
 export interface FormPost {
     title:string,

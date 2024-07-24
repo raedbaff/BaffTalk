@@ -6,15 +6,7 @@ import { PostType } from "@/types";
 import { useAuth } from "../context/AuthContext";
 
 const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    timeZoneName: "short",
-  };
+ 
   const [sortBy, setSortBy] = useState("New");
   const [sort, setSort] = useState(false);
   const [openComments, setOpenComments] = useState(false);
@@ -91,7 +83,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
               alt="upvote"
               className="cursor-pointer"
             />
-            <strong className="text-sm">5 </strong>
+            <strong className="text-sm">{post.upvotes?.length} </strong>
             <Image
               src={"/images/downvote.svg"}
               height={20}
@@ -110,7 +102,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
               width={20}
               alt="upvote"
             />
-            <strong className="text-sm">6 </strong>
+            <strong className="text-sm">{post.comments?.length} </strong>
           </div>
           <div className="rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center cursor-pointer ">
             <Image

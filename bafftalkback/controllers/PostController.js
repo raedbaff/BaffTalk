@@ -47,7 +47,41 @@ exports.createPost = async (req, res) => {
 };
 exports.getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("maker").populate("group");
+    const posts = await Post.aggregate([
+     {
+      $lookup: {
+        from: "users",
+        localField: "maker",
+        foreignField: "_id",
+        as: "maker",
+      },
+     },
+     {
+      $lookup: {
+        from: "groups",
+        localField: "group",
+        foreignField: "_id",
+        as: "group",
+      },
+     },
+      {
+        $unwind: "$maker",
+      },
+      {
+        $unwind: "$group",
+      },
+      {
+        $project : {
+          title: 1,
+          description: 1,
+          postImage: 1,
+          maker: 1,
+          group: 1,
+          upvotes: 1,
+          comments: 1,
+        }
+       },
+    ])
     if (!posts) {
       return res.status(404).json({ error: "No posts found" });
     }

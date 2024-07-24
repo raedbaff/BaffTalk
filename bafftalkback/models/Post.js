@@ -12,7 +12,7 @@ const PostSchema = new mongoose.Schema(
     postImage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "uploads.files",
-      required:false
+      required: false,
     },
     maker: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,8 +24,20 @@ const PostSchema = new mongoose.Schema(
       ref: "Group",
       required: true,
     },
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
+    upvotes : [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Upvote"
+      }
+    ]
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const Post = mongoose.model("Post", PostSchema);

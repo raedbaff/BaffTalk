@@ -8,8 +8,10 @@ require("./utils/auth");
 require("./middleware/db")
 const userRoutes = require("./routes/userRoutes");
 const fileRoutes = require("./routes/fileRoutes");
-const groupRoutes = require("./routes/groupRoutes")
-const postRoutes = require("./routes/postRoutes")
+const groupRoutes = require("./routes/groupRoutes");
+const postRoutes = require("./routes/postRoutes");
+const commentRoutes = require("./routes/commentsRoutes");
+const upvoteRoutes = require("./routes/upvotesRoutes");
 
 dotenv.config();
 const app = express();
@@ -41,6 +43,8 @@ app.use(userRoutes);
 app.use(fileRoutes);
 app.use(groupRoutes);
 app.use(postRoutes);
+app.use(commentRoutes);
+app.use(upvoteRoutes);
 
 app.get("/", (req, res) => {
   res.send('<a href="/auth/google">Connect with google</a>');
