@@ -121,6 +121,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
       );
       if (response.ok) {
         const data = await response.json();
+        
         setComments(data.comments);
         setCommentsLoading(false);
       }
@@ -401,6 +402,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
           ) : (
             comments.map((comment) => (
               <Comment
+                updateComments={setComments}
                 key={comment._id}
                 user={GlobalUser}
                 comment={comment}

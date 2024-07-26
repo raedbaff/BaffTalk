@@ -17,7 +17,9 @@ exports.createComment = async (req, res) => {
     const relatedPost = await Post.findById(post);
     relatedPost.comments.push(newComment._id);
     await relatedPost.save();
-    res.status(200).json({ message: "successfully created Comment",comment:newComment });
+    res
+      .status(200)
+      .json({ message: "successfully created Comment", comment: newComment });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -89,7 +91,66 @@ exports.getCommentsByPost = async (req, res) => {
       return res.status(404).json({ message: "No comments found" });
     }
     res.status(200).json({ comments });
-
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.upvoteComment = async (req, res) => {
+  try {
+    const { commentId, userId } = req.params;
+    if (!commentId || !userId) {
+      return res
+        .status(400)
+        .json({ message: "commentId and userId are required" });
+    }
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.upvotes.includes(userId)) {
+      comment.upvotes = comment.upvotes.filter(
+        (upvote) => upvote.toString() !== userId
+      );
+      await comment.save();
+      return res.status(200).json({ message: "Upvote removed" });
+    } else {
+      comment.upvotes.push(userId);
+      comment.downvotes = comment.downvotes.filter(
+        (downvote) => downvote.toString() !== userId
+      );
+      await comment.save();
+      return res.status(200).json({ message: "Upvote created" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.downvoteComment = async (req, res) => {
+  try {
+    const { commentId, userId } = req.params;
+    if (!commentId || !userId) {
+      return res
+        .status(400)
+        .json({ message: "commentId and userId are required" });
+    }
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.downvotes.includes(userId)) {
+      comment.downvotes = comment.downvotes.filter(
+        (downvote) => downvote.toString() !== userId
+      );
+      await comment.save();
+      return res.status(200).json({ message: "Downvote removed" });
+    } else {
+      comment.downvotes.push(userId);
+      comment.upvotes = comment.upvotes.filter(
+        (upvote) => upvote.toString() !== userId
+      );
+      await comment.save();
+      return res.status(200).json({ message: "Downvote created" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

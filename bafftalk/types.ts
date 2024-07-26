@@ -40,12 +40,14 @@ export interface FormPost {
     maker:string | Blob,
     group:string | Blob,
     postImage?:any,
-    createdAt:string | number | Date
+    createdAt?:string | number | Date
 }
 export interface CommentInter {
     _id:string,
     content:string,
     maker:User,
     post:PostType,
+    upvotes : Array<string>,
+    downvotes : Array<string>,
     createdAt:string | number | Date
 }

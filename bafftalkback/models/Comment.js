@@ -15,6 +15,17 @@ const CommentSchema = new mongoose.Schema(
       ref: "Post",
       required: [true, "comment's post is required"],
     },
+    upvotes : [
+      {
+        type: String,
+      }
+    ],
+    downvotes : [
+      {
+        type: String,
+      }
+    ],
+    default : []
   },
   { timestamps: true },
 );

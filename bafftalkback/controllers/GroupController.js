@@ -14,7 +14,6 @@ const deleteFilesFromBucket = async (filesId) => {
       bucket.delete(filesId);
       resolve();
     } catch (error) {
-      console.log("there is an error bro ", error);
       return reject(error);
     }
   });
