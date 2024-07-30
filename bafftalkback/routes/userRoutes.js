@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const isLoggedIn = require("../utils/userExistsMiddleware");
-const { getUserInfo } = require("../controllers/UserController");
+const { getUserInfo, getAllUsers, RegisterUser, RegisterAdmin } = require("../controllers/UserController");
 
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),
 );
+router.get("/users",getAllUsers);
 
 router.get(
   "/google/callback",
@@ -35,5 +36,26 @@ router.get("/logout", function (req, res, next) {
     res.redirect("http://localhost:3000");
   });
 });
+
+router.post("/login", (req, res,next) => {
+  passport.authenticate("local", function (err, user, info) {
+    console.log(info);
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json(info);
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json({ user: req.user, session: req.session});
+    });
+  })(req, res, next);
+  
+});
+router.post("/register",RegisterUser)
+router.post("/admin/register",RegisterAdmin)
 
 module.exports = router;

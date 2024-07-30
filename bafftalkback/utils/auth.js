@@ -1,5 +1,6 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 const dotenv = require("dotenv");
 const User = require("../models/User");
 dotenv.config();
@@ -42,6 +43,27 @@ passport.use(
     },
   ),
 );
+passport.use(new LocalStrategy(
+  async function(username, password, done) {
+    try {
+      const user = await User.findOne({ username: username});
+      if (!user) {
+        return done(null, false ,{ status: 401, message: 'Incorrect username.' });
+      }
+      const isMatch = await user.verifyPassword(password);
+
+      if (!isMatch) {
+        return done(null, false, { status: 401,message: 'Incorrect password.' });
+      }
+      return done(null, user);
+
+    } catch(error) {
+      console.log(error.message);
+      return done(error)
+
+    }
+  }
+));
 
 passport.serializeUser(function (user, cb) {
   cb(null, user); // Serialize the entire user object into the session
