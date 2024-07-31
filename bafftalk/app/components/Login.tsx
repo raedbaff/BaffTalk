@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 interface loginProps {
   close: () => void;
@@ -7,6 +8,13 @@ interface loginProps {
 }
 
 const Login: React.FC<loginProps> = ({ close, message }) => {
+ 
+  const [loginError, setLoginError] = React.useState("");
+  const [LoginUser, setLoginUser] = React.useState({
+    username: "",
+    password: "",
+  });
+  const router = useRouter();
   const googleLogin = async () => {
     try {
       window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
@@ -14,16 +22,37 @@ const Login: React.FC<loginProps> = ({ close, message }) => {
       console.log(error);
     }
   };
-  const handleLogIn = async () => {
+  const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      const response = await fetch("/api/auth", {
-        method: "GET",
-      });
-      if (!response.ok) {
-        console.log("response");
-        console.log(await response.json());
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`,
+        {
+          credentials: "include",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(LoginUser),
+        }
+      );
+      const data = await response.json();
+      if (data.status === 404) {
+        setLoginError("No user exists with the provided credentials :'(");
+        setTimeout(() => {
+          setLoginError("");
+        }, 2000);
+        return;
+      } else if (data.status === 401) {
+        setLoginError("Invalid credentials :(");
+        setTimeout(() => {
+          setLoginError("");
+        }, 2000);
+        return;
       }
-      console.log("success");
+      window.location.reload();
+      
+      
     } catch (error) {
       console.log(error);
     }
@@ -116,11 +145,19 @@ const Login: React.FC<loginProps> = ({ close, message }) => {
             className="px-6 py-2 flex flex-col w-full"
           >
             <input
+              value={LoginUser.username}
+              onChange={(e) =>
+                setLoginUser({ ...LoginUser, username: e.target.value })
+              }
               className="border bg-gray-300 w-full rounded-[25px] px-6 py-2 font-medium mb-3"
               type="text"
-              placeholder="Email or Username"
+              placeholder="Username"
             ></input>
             <input
+              onChange={(e) =>
+                setLoginUser({ ...LoginUser, password: e.target.value })
+              }
+              value={LoginUser.password}
               className="border bg-gray-300 w-full rounded-[25px] px-6 py-2 font-medium "
               type="password"
               placeholder="Password"
@@ -139,6 +176,13 @@ const Login: React.FC<loginProps> = ({ close, message }) => {
             <button className="border rounded-[25px] w-full items-center px-6 py-2 wf bg-gray-200">
               Log in
             </button>
+            {loginError !== "" && (
+              <div className="flex items-center justify-center">
+                <p className="text-red-500 font-bold text-sm mt-2">
+                  {loginError}
+                </p>
+              </div>
+            )}
           </form>
         </div>
       </div>

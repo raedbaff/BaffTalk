@@ -16,6 +16,7 @@ passport.use(
       const existingUser = await User.findOne({ googleId: profile.id });
       if (existingUser) {
         const user = {
+          existingUser: existingUser,
           profile: profile,
           accessToken: accessToken,
           refreshToken: refreshToken,
@@ -40,37 +41,50 @@ passport.use(
           console.log(error);
         }
       }
-    },
-  ),
+    }
+  )
 );
-passport.use(new LocalStrategy(
-  async function(username, password, done) {
+passport.use(
+  new LocalStrategy(async function (username, password, done) {
     try {
-      const user = await User.findOne({ username: username});
+      const user = await User.findOne({ username: username });
       if (!user) {
-        return done(null, false ,{ status: 401, message: 'Incorrect username.' });
+        return done(null, false, {
+          status: 404,
+          message: "User does not exist",
+        });
       }
       const isMatch = await user.verifyPassword(password);
 
       if (!isMatch) {
-        return done(null, false, { status: 401,message: 'Incorrect password.' });
+        return done(null, false, {
+          status: 401,
+          message: "Incorrect password.",
+        });
       }
+
       return done(null, user);
-
-    } catch(error) {
+    } catch (error) {
       console.log(error.message);
-      return done(error)
-
+      return done(error);
     }
+  })
+);
+passport.serializeUser((user, done) => {
+  if (user.existingUser) {
+    done(null, user.existingUser._id.toString()); // Store user ID in session
+  } else {
+    done(null, user._id.toString());
   }
-));
-
-passport.serializeUser(function (user, cb) {
-  cb(null, user); // Serialize the entire user object into the session
 });
 
-passport.deserializeUser(function (user, cb) {
-  cb(null, user); // Deserialize the entire user object from the session
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
 });
 
 module.exports = passport;

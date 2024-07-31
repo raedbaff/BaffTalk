@@ -16,11 +16,11 @@ export const AuthProvider = ({ children }) => {
       });
       const data = await response.json();
 
-      const fullUserDataResponse = await fetch(
-        `${backendUrl}/user/${data.user.profile.id}`
-      );
-      const userData = await fullUserDataResponse.json();
-      setGlobalUser(userData.user);
+      // const fullUserDataResponse = await fetch(
+      //   `${backendUrl}/user/${data.user.profile.id}`
+      // );
+      // const userData = await fullUserDataResponse.json();
+      setGlobalUser(data.user);
       setLoading(false)
     } catch (error) {
       setLoading(false)
