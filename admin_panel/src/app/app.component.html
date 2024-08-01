@@ -1,0 +1,8 @@
+<app-navbar *ngIf="keepLayout"></app-navbar>
+<app-topbar *ngIf="keepLayout"></app-topbar>
+
+<div class="flex flex-col justify-start" [ngClass]="{'ml-[250px] w-[calc(100% -250px)]' : keepLayout}">
+  <div [ngClass]="{'mt-[115px]':keepLayout}">
+    <router-outlet />
+  </div>
+</div>

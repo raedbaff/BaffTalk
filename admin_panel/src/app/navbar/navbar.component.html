@@ -1,0 +1,153 @@
+<nav class="flex h-screen flex-col px-4 fixed top-0 left-0 w-[250px]">
+  <div class="flex w-full h-full gap-2">
+    <div class="flex flex-col gap-5">
+      <div class="my-2 w-full">
+        <img src="icons/Logo-with-text.png" alt="logo" class="p-4" />
+      </div>
+      <a
+        class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+        routerLink="/"
+        routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <img
+          [src]="
+            isActiveRoute('/')
+              ? 'icons/stats-black.svg'
+              : 'icons/stats-white.svg'
+          "
+          alt="dashboard"
+          class="w-5 h-5"
+        />
+        <span>Dashboard</span>
+      </a>
+      <a
+        class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+        routerLink="/messages"
+        routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <img
+          [src]="
+            isActiveRoute('/messages')
+              ? 'icons/chat-black.svg'
+              : 'icons/chat-white.svg'
+          "
+          alt="messages"
+          class="w-5 h-5"
+        />
+        <span>Messages</span>
+      </a>
+      <a
+        class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+        routerLink="/users"
+        routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <img
+          [src]="
+            isActiveRoute('/users')
+              ? 'icons/users.svg'
+              : 'icons/users-white.svg'
+          "
+          alt="users"
+          class="w-5 h-5"
+        />
+        <span>Users</span>
+      </a>
+      <a
+        class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+        routerLink="/comments"
+        routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <img
+          [src]="
+            isActiveRoute('/comments')
+              ? 'icons/comments.svg'
+              : 'icons/comments-white.svg'
+          "
+          alt="comments"
+          class="w-5 h-5"
+        />
+        <span>Comments</span>
+      </a>
+      <a
+        class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+        routerLink="/settings"
+        routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <img
+          [src]="
+            isActiveRoute('/settings')
+              ? 'icons/settings-black.svg'
+              : 'icons/settings-white.svg'
+          "
+          alt="settings"
+          class="w-5 h-5"
+        />
+        <span>Settings</span>
+      </a>
+      <a
+        class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+        routerLink="/history"
+        routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <img
+          [src]="
+            isActiveRoute('/history')
+              ? 'icons/history.svg'
+              : 'icons/history-white.svg'
+          "
+          alt="history"
+          class="w-5 h-5"
+        />
+        <span>History</span>
+      </a>
+      <div class="mt-auto">
+        <a
+          class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+          routerLink="/login"
+          routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <img
+            [src]="
+              isActiveRoute('/login')
+                ? 'icons/login.svg'
+                : 'icons/login-white.svg'
+            "
+            alt="login"
+            class="w-5 h-5"
+          />
+          <span *ngIf="user; else noUser">Logout {{user.username}} </span>
+          <ng-template #noUser>
+            <span>Login</span>
+          </ng-template>
+        </a>
+        <a
+          class="flex items-center gap-2 cursor-pointer text-white opacity-50 py-2 px-3 hover:border hover:bg-[#2e2e38] rounded-[7px]"
+          routerLink="/signup"
+          routerLinkActive="text-black bg-[#a9dfd8] hover:bg-[#5ce5d6] hover:text-black"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <img
+            [src]="
+              isActiveRoute('/signup')
+                ? 'icons/signup.svg'
+                : 'icons/signup-white.svg'
+            "
+            alt="signup"
+            class="w-5 h-5"
+          />
+          <span>Sign up</span>
+        </a>
+      </div>
+    </div>
+    <div class="ml-auto">
+      <div class="h-full w-[2px] bg-gray-800"></div>
+    </div>
+  </div>
+</nav>
