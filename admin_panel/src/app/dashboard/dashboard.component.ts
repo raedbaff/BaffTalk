@@ -24,10 +24,12 @@ export class DashboardComponent {
   ) {}
   ngOnInit(): void {
     this.adminService
-      .getAllUsers()
+      .getTop3Users()
       .pipe(
         tap((response: any) => {
-          this.users = response?.users;
+          console.log('response', response);
+          
+          this.users = response;
         }),
         catchError((error: any) => {
           console.log(error);

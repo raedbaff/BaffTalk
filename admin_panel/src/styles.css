@@ -6,3 +6,8 @@
 body {
     background-color: #171821
 }
+.gradient-Text {
+    background: linear-gradient(to right, #f97316, #e0a846);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

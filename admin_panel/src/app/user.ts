@@ -7,4 +7,5 @@ export interface User {
     links?:Array<string>;
     createdAt?:string;
     role?:string;
+    postCount?:number;
 }

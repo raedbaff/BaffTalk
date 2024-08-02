@@ -10,8 +10,11 @@ import { environment } from '../environments/environment.development';
 export class AdminService {
 
   constructor(private http:HttpClient) {}
-getAllUsers():Observable<User[]> {
-  return this.http.get<User[]>(`${environment.apiUrl}/users`);
+getTop3Users():Observable<User[]> {
+  return this.http.get<User[]>(`${environment.apiUrl}/top3users`);
+}
+getAllUsers():Observable<any[]> {
+  return this.http.get<any>(`${environment.apiUrl}/users`);
 }
 
 getStats():Observable<any> {

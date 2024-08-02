@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { User } from '../user';
 
 @Component({
   selector: 'app-topbar',
@@ -12,22 +13,13 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './topbar.component.css'
 })
 export class TopbarComponent {
-  user: any;
+  @Input() user:User={};
   drowdown = false;
   searchForm = new FormGroup({
     search: new FormControl('',[Validators.required, Validators.minLength(3)])
   })
   constructor(private authService:AuthService,private router:Router) {}
-  ngOnInit(): void {
-    this.authService.fetchLoggedinUser().subscribe({
-      next: (data) => {
-        this.user = data.user;
-      },error : (error) => {
-        console.log(error);
-      }
-    })
-    
-  }
+ 
   handleDropdown() {
     this.drowdown = !this.drowdown;
   }

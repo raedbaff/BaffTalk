@@ -110,18 +110,18 @@
   <div class="w-[98%]">
     <div class="flex flex-col p-2 rounded-[15px] bg-[#21222d]">
       <div class="py-4 px-6">
-        <h1 class="text-2xl text-white font-bold py-1">Users</h1>
+        <h1 class="text-2xl text-white font-bold py-1">Top Users</h1>
       </div>
 
       <div class="overflow-x-auto py-2">
         <table class="w-full text-sm text-left rtl:text-right">
           <thead class="text-xs text-gray-700 uppercase">
             <tr>
-              <th scope="col" class="px-6 py-3 text-white opacity-50">#</th>
+              <th scope="col" class="px-6 py-3 text-white opacity-50">Photo</th>
               <th scope="col" class="px-6 py-3 text-white opacity-50">Name</th>
               <th scope="col" class="px-6 py-3 text-white opacity-50">Email</th>
               <th scope="col" class="px-6 py-3 text-white opacity-50">
-                Popularity
+                Total Posts Created
               </th>
               <th scope="col" class="px-6 py-3 text-white opacity-50">
                 Interactions
@@ -129,22 +129,26 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let user of users; let i = index" class="border-b">
+            <tr *ngFor="let user of users" class="border-b">
               <th
                 scope="row"
                 class="px-6 py-4 font-medium text-white whitespace-nowrap"
               >
-                {{ i + 1 }}
+                <img
+                  [src]="user?.avatar ? user?.avatar : 'images/emptyAvatar.png'"
+                  class="w-8 h-8 rounded-full object-fill"
+                  alt="userPhoto"
+                />
               </th>
               <td class="px-6 py-4 text-white font-bold">
-                {{ user.username }}
+                {{ user?.username }}
               </td>
-              <td class="px-6 py-4 text-white font-bold">{{ user.email }}</td>
+              <td class="px-6 py-4 text-white font-bold">{{ user?.email }}</td>
               <td class="px-6 py-4 text-white font-bold">
-                {{ user.links }} users
+                {{ user?.postCount }} Posts Created
               </td>
               <td class="px-6 py-4 text-white font-bold">
-                {{ user.email }}
+                500 Likes / Comments
               </td>
             </tr>
           </tbody>

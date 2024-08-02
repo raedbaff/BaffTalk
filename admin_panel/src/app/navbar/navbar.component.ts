@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-navbar',
@@ -12,25 +13,14 @@ import { AuthService } from '../auth.service';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
-  user:any;
+  @Input() user:User={};
   activeRoute: string = '';
   constructor(private router: Router,private authService:AuthService) {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(()=>{
       this.activeRoute = this.router.url;
     })
   }
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.authService.fetchLoggedinUser().subscribe({
-      next: (data) => {
-
-        this.user = data.user;
-      },error : (error) => {
-        console.log(error);
-      }
-    })
-  }
+ 
   isActiveRoute(route:string): boolean {
     return this.activeRoute === route;
   }
