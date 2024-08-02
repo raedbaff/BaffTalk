@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { BehaviorSubject, catchError, Observable, of, tap } from 'rxjs';
 import { User } from './user';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment.development';
@@ -8,12 +8,15 @@ import { environment } from '../environments/environment.development';
   providedIn: 'root',
 })
 export class AuthService {
-  private userSubject: BehaviorSubject<User | null> =
-    new BehaviorSubject<User | null>(null);
+  public userSignal = signal<User | null>(null);
+  userSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(
+    null
+  );
   public user$ = this.userSubject.asObservable();
+  public connectedUser:any;
 
   constructor(private http: HttpClient) {
-    // this.loadUser();
+
   }
 
   login(
@@ -33,21 +36,30 @@ export class AuthService {
       );
   }
   loadUser(): void {
+    console.log('starting load user');
+
     const url = `${environment.apiUrl}/user`;
 
-    this.http.get<any>(url, { withCredentials: true }).subscribe({
-      next: (user) => {
-     
-        this.userSubject.next(user.user);
-      },
-      error: (err) => {
-        console.log(err);
-        
-        this.userSubject.next(null);
-      },
-    });
+    this.http
+      .get<any>(url, { withCredentials: true })
+      .pipe(
+        tap((user) => {
+          console.log('setting user subject');
+
+          this.userSubject.next(user.user);
+        }),
+        catchError((err) => {
+          console.log('Error fetching user:', err);
+          this.userSubject.next(null);
+          return of(null);
+        })
+      )
+      .subscribe();
   }
+
   fetchLoggedinUser(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/user`, { withCredentials: true });
+    return this.http.get(`${environment.apiUrl}/user`, {
+      withCredentials: true,
+    });
   }
 }

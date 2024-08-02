@@ -1,6 +1,6 @@
 <section class="flex gap-2 w-full">
   <div class="w-full flex flex-col gap-4">
-    <div class="flex flex-col p-2 rounded-[7px] bg-[#2e2e38]">
+    <div class="flex flex-col p-2 rounded-[15px] w-[97%] bg-[#21222d]">
       <div class="py-4 px-6">
         <h1 class="text-2xl text-white font-bold py-1">Today’s Sales</h1>
         <h2 class="text-normal font-bold text-gray-500 py-1">Sales Summary</h2>
@@ -8,70 +8,85 @@
 
       <div class="flex items-center justify-around gap-1 mb-5">
         <div
-          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px]"
+          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px] w-[250px]"
         >
-          <span class="font-bold text-2xl">5k</span>
-          <span class="text-xl">Total Sales</span>
+          <img src="icons/usersIcon.svg" alt="users" class="w-8 h-8" />
+          <span class="font-bold text-2xl">{{ stats?.users }} </span>
+          <span class="text-xl">Total Users</span>
           <small>+10% from yesterday</small>
         </div>
         <div
-          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px]"
+          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px] w-[250px]"
         >
-          <span class="font-bold text-2xl">5k</span>
-          <span class="text-xl">Total Sales</span>
+          <img src="icons/groups.svg" alt="users" class="w-8 h-8" />
+          <span class="font-bold text-2xl">{{ stats?.groups }} </span>
+          <span class="text-xl">Total Groups</span>
           <small>+10% from yesterday</small>
         </div>
         <div
-          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px]"
+          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px] w-[250px]"
         >
-          <span class="font-bold text-2xl">5k</span>
-          <span class="text-xl">Total Sales</span>
+          <img src="icons/posts.svg" alt="users" class="w-8 h-8" />
+          <span class="font-bold text-2xl">{{ stats?.posts }} </span>
+          <span class="text-xl">Total Posts</span>
           <small>+10% from yesterday</small>
         </div>
         <div
-          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px]"
+          class="flex flex-col gap-2 bg-[#171821] py-6 px-4 text-white rounded-[10px] w-[250px]"
         >
-          <span class="font-bold text-2xl">5k</span>
-          <span class="text-xl">Total Sales</span>
+          <img src="icons/commentsIcon.svg" alt="users" class="w-8 h-8" />
+          <span class="font-bold text-2xl">{{ stats?.comments }} </span>
+          <span class="text-xl">Total Comments</span>
           <small>+10% from yesterday</small>
         </div>
       </div>
     </div>
-    <div class="flex flex-col p-2 rounded-[7px] bg-[#2e2e38]">
+    <div class="flex flex-col p-2 rounded-[15px] w-[97%] bg-[#21222d]">
       <div class="py-4 px-6">
-        <h1 class="text-2xl text-white font-bold py-1">Top Groups</h1>
+        <h1 class="text-2xl text-white font-bold py-1">Groups</h1>
       </div>
 
       <div class="overflow-x-auto py-2">
         <table class="w-full text-sm text-left rtl:text-right">
           <thead class="text-xs text-gray-700 uppercase">
             <tr>
-              <th scope="col" class="px-6 py-3 text-white opacity-50">#</th>
+              <th scope="col" class="px-6 py-3 text-white opacity-50">
+                Group Image
+              </th>
               <th scope="col" class="px-6 py-3 text-white opacity-50">Group</th>
+              <th scope="col" class="px-6 py-3 text-white opacity-50">Topic</th>
               <th scope="col" class="px-6 py-3 text-white opacity-50">
                 Popularity
               </th>
-              <th scope="col" class="px-6 py-3 text-white opacity-50">
-                Interactions
-              </th>
-              
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let group of groups" class="border-b-[0.5px] border-gray-500">
-              <th
-                scope="row"
-                class="px-6 py-4 font-medium text-white whitespace-nowrap"
-              >
-                {{ group.id }}
-              </th>
+            <tr
+              *ngFor="let group of groups"
+              class="border-b-[0.5px] border-gray-500"
+            >
+              <td class="px-6 py-4">
+                <img
+                  [src]="group.groupImage"
+                  class="w-8 h-8 rounded-full object-fill"
+                  alt="groupImage"
+                />
+              </td>
               <td class="px-6 py-4 text-white font-bold">{{ group.name }}</td>
               <td class="px-6 py-4 text-white font-bold">
-                {{ group.users.length }} users
+                {{ group.topic }}
               </td>
-              <td class="px-6 py-4 text-white font-bold">
-                {{ group.interactions }}
+              <td
+                *ngIf="group.members.length === 1; else beyond"
+                class="px-6 py-4 text-white font-bold"
+              >
+                {{ group.members.length }} member
               </td>
+              <ng-template #beyond>
+                <td class="px-6 py-4 text-white font-bold">
+                  {{ group.members.length }} members
+                </td>
+              </ng-template>
             </tr>
           </tbody>
         </table>
@@ -93,7 +108,7 @@
 </section>
 <section class="my-8">
   <div class="w-[98%]">
-    <div class="flex flex-col p-2 rounded-[7px] bg-[#2e2e38]">
+    <div class="flex flex-col p-2 rounded-[15px] bg-[#21222d]">
       <div class="py-4 px-6">
         <h1 class="text-2xl text-white font-bold py-1">Users</h1>
       </div>
@@ -114,14 +129,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let user of users;let i= index" class="border-b">
+            <tr *ngFor="let user of users; let i = index" class="border-b">
               <th
                 scope="row"
                 class="px-6 py-4 font-medium text-white whitespace-nowrap"
               >
-                {{ i+1 }}
+                {{ i + 1 }}
               </th>
-              <td class="px-6 py-4 text-white font-bold">{{ user.username }}</td>
+              <td class="px-6 py-4 text-white font-bold">
+                {{ user.username }}
+              </td>
               <td class="px-6 py-4 text-white font-bold">{{ user.email }}</td>
               <td class="px-6 py-4 text-white font-bold">
                 {{ user.links }} users
@@ -134,6 +151,5 @@
         </table>
       </div>
     </div>
-    
   </div>
 </section>

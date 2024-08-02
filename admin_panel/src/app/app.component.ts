@@ -16,21 +16,17 @@ import { environment } from '../environments/environment.development';
 })
 export class AppComponent {
   connectedUser: any;
-  keepLayout: boolean = true;
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, public authService: AuthService) {}
   ngOnInit(): void {
-    console.log(environment.apiUrl)
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.keepLayout = !this.router.url.includes('login');
-      });
+    
     this.authService.fetchLoggedinUser().subscribe({
       next: (data) => {
         this.connectedUser = data.user;
+        this.authService.userSignal.set(data.user);
+        console.log("connected user from app component is: ", this.authService.userSignal());
+        
       },
       error: (error) => {
-
         this.connectedUser = null;
       },
     });

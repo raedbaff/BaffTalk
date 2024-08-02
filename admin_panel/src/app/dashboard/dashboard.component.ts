@@ -5,71 +5,69 @@ import { catchError, filter, of, tap } from 'rxjs';
 import { AdminService } from '../admin.service';
 import { User } from '../user';
 import { AuthService } from '../auth.service';
+import { environment } from '../../environments/environment.development';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
-  groups:any=[];
-  users:User[]=[];
-  constructor(private adminService: AdminService, private authService:AuthService) {
-    this.groups = [
-      {
-        id: 1,
-        name: 'Group 1',
-        users: [
-          { id: 1, name: 'User 1' },
-          { id: 2, name: 'User 2' },
-          { id: 3, name: 'User 3' }
-        ],
-        interactions:5
-      },
-      {
-        id: 2,
-        name: 'Group 2',
-        users: [
-          { id: 1, name: 'User 1' },
-          { id: 2, name: 'User 2' },
-          { id: 3, name: 'User 3' }
-        ],
-        interactions:8
-      },
-      {
-        id: 3,
-        name: 'Group 3',
-        users: [
-          { id: 1, name: 'User 1' },
-          { id: 2, name: 'User 2' },
-          { id: 3, name: 'User 3' }
-        ],
-        interactions:3
-      }
-      
-    ];
-  }
+  groups: any = [];
+  users: User[] = [];
+  stats: any;
+  constructor(
+    private adminService: AdminService,
+    private authService: AuthService
+  ) {}
   ngOnInit(): void {
-    this.adminService.getAllUsers().pipe(
-      tap((response:any) => {
-        this.users = response.users;
-      } ),catchError((error:any) => {
-        console.log(error);
-        return of([]);
-        
-      }
-    )
-  ).subscribe();
+    this.adminService
+      .getAllUsers()
+      .pipe(
+        tap((response: any) => {
+          this.users = response?.users;
+        }),
+        catchError((error: any) => {
+          console.log(error);
+          return of([]);
+        })
+      )
+      .subscribe();
 
- 
-  
-  
-  
-    
+    this.adminService
+      .getStats()
+      .pipe(
+        tap((response: any) => {
+          this.stats = response;
+        }),
+        catchError((error: any) => {
+          console.log(error);
+          return of([]);
+        })
+      )
+      .subscribe();
+
+    this.adminService
+      .geteGroups()
+      .pipe(
+        filter((response: any) => {
+          console.log('response', response);
+
+          for (let group of response) {
+            group.groupImage = `${environment.apiUrl}/group/photo/${group._id}`;
+          }
+          return response;
+        }),
+        tap((response: any) => {
+          this.groups = response;
+        }),
+        catchError((error: any) => {
+          console.log(error);
+          return of([]);
+        })
+      )
+      .subscribe();
   }
-  
-
-
 }

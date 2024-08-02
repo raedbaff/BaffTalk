@@ -9,11 +9,15 @@ import { environment } from '../environments/environment.development';
 })
 export class AdminService {
 
-  constructor(private http:HttpClient) {
-    
-   
-}
+  constructor(private http:HttpClient) {}
 getAllUsers():Observable<User[]> {
   return this.http.get<User[]>(`${environment.apiUrl}/users`);
+}
+
+getStats():Observable<any> {
+  return this.http.get<any>(`${environment.apiUrl}/statistics`);
+}
+geteGroups():Observable<any> {
+  return this.http.get<any>(`${environment.apiUrl}/group`);
 }
 }
