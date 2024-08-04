@@ -1,22 +1,24 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 interface loginProps {
   close: () => void;
   message?: string;
-  openSignup: () => void;
+  openLogin: () => void;
 }
 
-const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {
- 
-  const [loginError, setLoginError] = useState("");
-  const [LoginUserFormError, setLoginUserFormError] = useState({
+const SignUp: React.FC<loginProps> = ({ close, message, openLogin }) => {
+  const [SignupFormError, setSignUpError] = useState({
     invalidUsername: "",
+    invalidEmail: "",
     invalidPassword: "",
-  })
-  const [LoginUser, setLoginUser] = useState({
+  });
+  const [SignupFailed, setSignUpFailed] = useState("");
+  const [unexpectedLoginError, setUnexpectedLoginError] = useState("");
+  const [SignUpSuccess, setSignUpSuccess] = useState("");
+  const [SignUpUser, setSignUpUser] = useState({
     username: "",
+    email: "",
     password: "",
   });
   const googleLogin = async () => {
@@ -26,76 +28,119 @@ const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {
       console.log(error);
     }
   };
-  const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (LoginUser.username === "") {
-      setLoginUserFormError({
-        ...LoginUserFormError,
+    if (SignUpUser.username === "") {
+      setSignUpError({
+        ...SignupFormError,
         invalidUsername: "Username is required",
       });
       setTimeout(() => {
-        setLoginUserFormError({ ...LoginUserFormError, invalidUsername: "" });
+        setSignUpError({ ...SignupFormError, invalidUsername: "" });
       }, 2000);
       return;
-    } else if (LoginUser.username.length < 3) {
-      setLoginUserFormError({
-        ...LoginUserFormError,
+    } else if (SignUpUser.username.length < 3) {
+      setSignUpError({
+        ...SignupFormError,
         invalidUsername: "Username must be atleast 3 characters",
       });
       setTimeout(() => {
-        setLoginUserFormError({ ...LoginUserFormError, invalidUsername: "" });
+        setSignUpError({ ...SignupFormError, invalidUsername: "" });
       }, 2000);
       return;
     }
-    if (LoginUser.password === "") {
-      setLoginUserFormError({
-        ...LoginUserFormError,
+    if (SignUpUser.email === "") {
+      setSignUpError({ ...SignupFormError, invalidEmail: "Email is required" });
+      setTimeout(() => {
+        setSignUpError({ ...SignupFormError, invalidEmail: "" });
+      }, 2000);
+      return;
+    } else if (
+      !SignUpUser.email
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )
+    ) {
+      setSignUpError({ ...SignupFormError, invalidEmail: "Invalid email" });
+      setTimeout(() => {
+        setSignUpError({ ...SignupFormError, invalidEmail: "" });
+      }, 2000);
+      return;
+    }
+    if (SignUpUser.password === "") {
+      setSignUpError({
+        ...SignupFormError,
         invalidPassword: "Password is required",
       });
       setTimeout(() => {
-        setLoginUserFormError({ ...LoginUserFormError, invalidPassword: "" });
+        setSignUpError({ ...SignupFormError, invalidPassword: "" });
       }, 2000);
       return;
-    } else if (LoginUser.password.length < 6) {
-      setLoginUserFormError({
-        ...LoginUserFormError,
+    } else if (SignUpUser.password.length < 6) {
+      setSignUpError({
+        ...SignupFormError,
         invalidPassword: "Password must be atleast 6 characters",
       });
       setTimeout(() => {
-        setLoginUserFormError({ ...LoginUserFormError, invalidPassword: "" });
+        setSignUpError({ ...SignupFormError, invalidPassword: "" });
       }, 2000);
       return;
     }
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/register`,
         {
           credentials: "include",
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(LoginUser),
+          body: JSON.stringify(SignUpUser),
         }
       );
-      const data = await response.json();
-      if (data.status === 404) {
-        setLoginError("No user exists with the provided credentials :'(");
+      if (response.status === 400) {
+        setSignUpFailed("A user already exists with this email");
         setTimeout(() => {
-          setLoginError("");
-        }, 2000);
-        return;
-      } else if (data.status === 401) {
-        setLoginError("Invalid credentials :(");
-        setTimeout(() => {
-          setLoginError("");
+          setSignUpFailed("");
         }, 2000);
         return;
       }
-      window.location.reload();
-      
-      
+      const data = await response.json();
+      console.log("your data");
+      console.log(data.status);
+
+      setSignUpSuccess("Account created successfully, redirecting...");
+      setTimeout(async () => {
+        setSignUpSuccess("");
+        try {
+          const LoginUser = {
+            username: SignUpUser.username,
+            password: SignUpUser.password,
+          };
+          await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
+            credentials: "include",
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(LoginUser),
+          });
+          window.location.reload();
+        } catch (error) {
+          setUnexpectedLoginError(
+            "An error occured while logging in, please try again later"
+          );
+          setTimeout(() => {
+            setUnexpectedLoginError("");
+          }, 2000);
+          console.log(error);
+        }
+      }, 3000);
     } catch (error) {
+      setSignUpFailed(
+        "An error occured while signing up, please try again later"
+      );
       console.log(error);
     }
   };
@@ -103,7 +148,7 @@ const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white relative md:rounded-[20px] h-screen w-screen md:h-[80%] md:w-[55%] lg:w-[45%] xl:w-[35%]  flex flex-col">
         <div className="font-bold text-black text-2xl p-5 mt-5 ">
-          {message ? message : "Log in to bafftalk"}
+          {message ? message : "Sign up to bafftalk"}
         </div>
         <button onClick={close} className="absolute top-4 right-4 text-2xl">
           &times;
@@ -183,35 +228,55 @@ const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {
           </button>
           <span className="text-gray-400 font-bold text-2xl mt-3 mb-2">OR</span>
           <form
-            onSubmit={handleLogIn}
             className="px-6 py-2 flex flex-col w-full"
+            onSubmit={handleSignup}
           >
             <input
-              value={LoginUser.username}
+              value={SignUpUser.username}
               onChange={(e) =>
-                setLoginUser({ ...LoginUser, username: e.target.value })
+                setSignUpUser({ ...SignUpUser, username: e.target.value })
               }
-              className="border bg-gray-300 w-full rounded-[25px] px-6 py-2 font-medium mb-3"
+              className={`border bg-gray-300 ${
+                SignupFormError.invalidUsername && "border-red-600"
+              } w-full rounded-[25px] px-6 py-2 font-medium mb-3`}
               type="text"
               placeholder="Username"
             ></input>
-            {LoginUserFormError.invalidUsername !== "" && (
-              <p className="text-red-500 font-bold text-sm mt-2">
-                {LoginUserFormError.invalidUsername}
+            {SignupFormError.invalidUsername && (
+              <p className="text-red-500 font-bold text-sm px-4 py-2">
+                {SignupFormError.invalidUsername}
+              </p>
+            )}
+            <input
+              value={SignUpUser.email}
+              onChange={(e) =>
+                setSignUpUser({ ...SignUpUser, email: e.target.value })
+              }
+              className={`border bg-gray-300 ${
+                SignupFormError.invalidEmail && "border-red-600"
+              } w-full rounded-[25px] px-6 py-2 font-medium mb-3`}
+              type="text"
+              placeholder="Email"
+            ></input>
+            {SignupFormError.invalidEmail && (
+              <p className="text-red-500 font-bold text-sm px-4 py-2">
+                {SignupFormError.invalidEmail}
               </p>
             )}
             <input
               onChange={(e) =>
-                setLoginUser({ ...LoginUser, password: e.target.value })
+                setSignUpUser({ ...SignUpUser, password: e.target.value })
               }
-              value={LoginUser.password}
-              className="border bg-gray-300 w-full rounded-[25px] px-6 py-2 font-medium "
+              value={SignUpUser.password}
+              className={`border bg-gray-300 ${
+                SignupFormError.invalidPassword && "border-red-600"
+              } w-full rounded-[25px] px-6 py-2 font-medium mb-3`}
               type="password"
               placeholder="Password"
             ></input>
-            {LoginUserFormError.invalidPassword !== "" && (
-              <p className="text-red-500 font-bold text-sm mt-2">
-                {LoginUserFormError.invalidPassword}
+            {SignupFormError.invalidPassword && (
+              <p className="text-red-500 font-bold text-sm px-4 py-2">
+                {SignupFormError.invalidPassword}
               </p>
             )}
             <Link className="text-blue-400 px-3 py-3 text-sm" href={"/"}>
@@ -219,19 +284,37 @@ const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {
             </Link>
             <div className="px-3 py-3">
               <span className="text-sm">
-                New to bafftalk ?{" "}
-                <button type="button" className="text-blue-400 text-sm" onClick={openSignup}>
-                  Create account
+                Already have an account ?{" "}
+                <button
+                  type="button"
+                  className="text-blue-400 text-sm"
+                  onClick={openLogin}
+                >
+                  Log in
                 </button>
               </span>
             </div>
             <button className="border rounded-[25px] w-full items-center px-6 py-2 wf bg-gray-200">
-              Log in
+              Sign Up
             </button>
-            {loginError !== "" && (
+            {unexpectedLoginError !== "" && (
               <div className="flex items-center justify-center">
                 <p className="text-red-500 font-bold text-sm mt-2">
-                  {loginError}
+                  {unexpectedLoginError}
+                </p>
+              </div>
+            )}
+            {SignUpSuccess !== "" && (
+              <div className="flex items-center justify-center">
+                <p className="text-green-500 font-bold text-sm mt-2">
+                  {SignUpSuccess}
+                </p>
+              </div>
+            )}
+            {SignupFailed !== "" && (
+              <div className="flex items-center justify-center">
+                <p className="text-red-500 font-bold text-sm mt-2">
+                  {SignupFailed}
                 </p>
               </div>
             )}
@@ -242,4 +325,4 @@ const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {
   );
 };
 
-export default Login;
+export default SignUp;

@@ -7,29 +7,67 @@ import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
-  const {GlobalUser}=useAuth()
+  const [avatar, setAvatar] = useState(null);
+  const { GlobalUser, setGlobalUser } = useAuth();
   const [selectedMenu, setSelectedMenu] = useState("Overview");
-  const [displayInfo,setDisplayInfo]=useState(false)
+  const [displayInfo, setDisplayInfo] = useState(false);
+  const handleFileChange = async (e: any) => {
+    try {
+      const newForm = new FormData();
+      newForm.append("avatar", e.target.files[0]);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/avatar/${GlobalUser?._id}`,
+        {
+          method: "PUT",
+          body: newForm,
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setGlobalUser({
+          ...GlobalUser,
+          avatar: data.avatar,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex flex-col gap-1 px-2 xl:px-8 w-full lg:w-[calc(100vw-260px)] lg:ml-[255px]">
-        <UserInfoModal displayInfo={displayInfo} setDisplayInfo={setDisplayInfo} />
+      <UserInfoModal
+        displayInfo={displayInfo}
+        setDisplayInfo={setDisplayInfo}
+      />
       <div className="flex">
         <div className="w-full">
           <div className="flex p-2">
-            <Image
-            loader={()=>GlobalUser?.avatar}
-              className="rounded-[20px]"
-              src={GlobalUser?.avatar}
-              height={300}
-              width={120}
-              alt="peter"
-            />
+            <div className="relative h-[80px] w-[120px] ">
+              <Image
+                loader={() => GlobalUser?.avatar}
+                className="rounded-[20px] cursor-pointer"
+                src={GlobalUser?.avatar}
+                height={300}
+                width={120}
+                alt="avatar"
+              />
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            </div>
+
             <div className="flex flex-col">
               <div className="mt-auto flex flex-col gap-1 px-4 py-2">
                 <div className="flex gap-2 items-center">
-                  <strong className="font-bold text-lg">{GlobalUser?.username}</strong>
+                  <strong className="font-bold text-lg">
+                    {GlobalUser?.username}
+                  </strong>
                   <Image
-                    onClick={()=>setDisplayInfo(true)}
+                    onClick={() => setDisplayInfo(true)}
                     className="cursor-pointer"
                     src={"/images/info.svg"}
                     width={25}
@@ -37,7 +75,9 @@ const Profile = () => {
                     alt="info"
                   />
                 </div>
-                <span className="text-sm text-gray-400">u/{GlobalUser?.username}</span>
+                <span className="text-sm text-gray-400">
+                  u/{GlobalUser?.username}
+                </span>
               </div>
             </div>
           </div>
@@ -104,7 +144,10 @@ const Profile = () => {
           </Link>
           <hr className="border-gray-300 my-0 w-full mt-2"></hr>
           <div className="mt-2 flex justify-center items-center">
-            <MyProfileContent data={GlobalUser?.posts} contentType={selectedMenu} />
+            <MyProfileContent
+              data={GlobalUser?.posts}
+              contentType={selectedMenu}
+            />
           </div>
         </div>
       </div>

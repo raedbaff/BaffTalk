@@ -9,17 +9,24 @@ import NotificationsPopup from "./NotificationsPopup";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Loading from "./loading";
+import SignUp from "./SignUp";
 
 const NavbarUserSection = () => {
   const { GlobalUser, loading, GlobalUserError } = useAuth();
 
   const [open, setOpen] = useState(false);
+  const [openSignup, setOpenSignup] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [reduced, setReduced] = useState(false);
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
   const handleClick = () => {
     setOpen((prev) => !prev);
+    document.body.style.overflow = "hidden";
+  };
+  const handleOpenSignUp = () => {
+    setOpen((prev) => !prev);
+    setOpenSignup((prev) => !prev);
     document.body.style.overflow = "hidden";
   };
   const handleOpenChatBox = () => {
@@ -30,6 +37,10 @@ const NavbarUserSection = () => {
   };
   const handleClose = () => {
     setOpen(false);
+    document.body.style.overflow = "auto";
+  };
+  const handleCloseSignup = () => {
+    setOpenSignup(false);
     document.body.style.overflow = "auto";
   };
   return (
@@ -108,7 +119,8 @@ const NavbarUserSection = () => {
         </div>
       )}
 
-      {open && <Login close={handleClose} />}
+      {open && <Login close={handleClose} openSignup={handleOpenSignUp} />}
+      {openSignup && <SignUp close={handleCloseSignup} openLogin={handleOpenSignUp} />}
       <ChatBox
         opened={chatOpen}
         reduced={reduced}
