@@ -1,5 +1,8 @@
+const { getBucket } = require("../middleware/db");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const uploadFileToBucket = require("../utils/helperFunctions");
+const mongoose = require("mongoose");
 
 exports.getUserInfo = async (req, res) => {
   const { id } = req.params;
@@ -75,4 +78,54 @@ exports.RegisterAdmin = async (req, res) => {
     res.status(500).json(error.message);
   }
 };
+exports.UpdateProfilePicture = async (req, res) => {
+  try {
+    const bucket = getBucket();
+    if (!bucket) {
+      return res.status(500).json("Bucket not initialized");
+    }
 
+    const { id } = req.params;
+    const newAvatar = req.file;
+    if (!id) {
+      return res.status(400).json("Please provide a user id");
+    }
+    if (!newAvatar) {
+      return res.status(400).json("Please provide an image");
+    }
+
+    const userToUpdate = await User.findById(id);
+    if (!userToUpdate) {
+      return res.status(404).json("User not found");
+    }
+
+    const newAvatarId = await uploadFileToBucket(newAvatar);
+    userToUpdate.avatar = `http://localhost:4000/user/avatar/${newAvatarId}`;
+    await userToUpdate.save();
+    res.status(200).json(userToUpdate);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+exports.FetchUserAvatar = async (req, res) => {
+  try {
+    const { avatarId } = req.params;
+    if (!avatarId) {
+      return res.status(400).json("Please provide a user id");
+    }
+    const avatarIdObject = new mongoose.Types.ObjectId(avatarId);
+
+    const bucket = getBucket();
+    if (!bucket) {
+      return res.status(500).json("Bucket not initialized");
+    }
+    const avatarStream = bucket.openDownloadStream(avatarIdObject);
+    avatarStream.pipe(res);
+    avatarStream.on("error", (error) => {
+      res.status(500).json(error.message);
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error.message);
+  }
+};

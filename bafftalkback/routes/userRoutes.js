@@ -7,7 +7,10 @@ const {
   getAllUsers,
   RegisterUser,
   RegisterAdmin,
+  UpdateProfilePicture,
+  FetchUserAvatar,
 } = require("../controllers/UserController");
+const { upload } = require("../middleware/db");
 
 router.get(
   "/auth/google",
@@ -69,5 +72,8 @@ router.post("/login", (req, res, next) => {
 
 router.post("/register", RegisterUser);
 router.post("/admin/register", RegisterAdmin);
+
+router.put("/user/avatar/:id", upload.single("avatar"), UpdateProfilePicture);
+router.get("/user/avatar/:avatarId", upload.single("avatar"), FetchUserAvatar);
 
 module.exports = router;
