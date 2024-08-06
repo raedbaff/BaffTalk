@@ -5,7 +5,7 @@ import React, { useState } from "react";
 interface loginProps {
   close: () => void;
   message?: string;
-  openSignup: () => void;
+  openSignup?: () => void;
 }
 
 const Login: React.FC<loginProps> = ({ close, message,openSignup }) => {

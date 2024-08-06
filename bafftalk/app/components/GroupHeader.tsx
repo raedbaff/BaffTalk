@@ -7,7 +7,13 @@ import { useAuth } from "../context/AuthContext";
 import Loading from "./loading";
 import ConfirmBox from "./ConfirmBox";
 
-const GroupHeader = ({ group }: { group: Group | undefined }) => {
+const GroupHeader = ({
+  group,
+  setgroup,
+}: {
+  group: Group | undefined;
+  setgroup: any;
+}) => {
   const [loading, setLoading] = useState(true);
   const [showConfirmDelete, setshowConfirmDelete] = useState(false);
   const { GlobalUser } = useAuth();
@@ -35,6 +41,39 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
         router.push("/");
       }
       console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const joinOrLeaveGroup = async () => {
+    try {
+      console.log("before");
+      console.log(group?.members);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/group/${GlobalUser?._id}/${group?._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data", data);
+        if (data.success === "User added to group successfully") {
+          setgroup({
+            ...group,
+            members: [...(group?.members || []), GlobalUser?._id],
+          });
+        } else {
+          setgroup({
+            ...group,
+            members: group?.members.filter((id) => id !== GlobalUser?._id),
+          });
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -109,7 +148,7 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
               />
               Create Post
             </button>
-            {group?.maker === GlobalUser?._id ? (
+            {group?.maker === GlobalUser?._id && (
               <button
                 onClick={() => {
                   setshowConfirmDelete(true);
@@ -118,20 +157,17 @@ const GroupHeader = ({ group }: { group: Group | undefined }) => {
               >
                 Delete
               </button>
-            ) : group?.members?.includes(GlobalUser?._id) ? (
+            )}
+            {group?.members?.includes(GlobalUser?._id) ? (
               <button
-                onClick={() => {
-                  router.push("/createPost");
-                }}
+                onClick={joinOrLeaveGroup}
                 className="ml-auto px-3 py-[6px] text-white text-xs md:text-lg bg-red-600 rounded-[20px] flex items-center border border-gray-600"
               >
                 Leave
               </button>
             ) : (
               <button
-                onClick={() => {
-                  router.push("/createPost");
-                }}
+                onClick={joinOrLeaveGroup}
                 className="ml-auto px-3 py-[6px] text-white text-xs md:text-lg bg-blue-600 rounded-[20px] flex items-center border border-gray-600"
               >
                 Join

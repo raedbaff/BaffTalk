@@ -4,9 +4,9 @@ export interface Group {
     description:string,
     maker:string,
     topic:string,
-    members:[any],
+    members:Array<string>,
     groupCoverImage?:string
-    rules:[Rule]
+    rules:Array<Rule>
 }
 export interface User {
     _id:string,

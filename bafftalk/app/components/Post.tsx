@@ -121,7 +121,7 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
       );
       if (response.ok) {
         const data = await response.json();
-        
+
         setComments(data.comments);
         setCommentsLoading(false);
       }
@@ -212,11 +212,13 @@ const Post = ({ post, loading }: { post: PostType; loading: boolean }) => {
               Edit
             </button>
           ) : (
-            <button
-              className={`rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold`}
-            >
-              Join
-            </button>
+            !updatedPost.group.members?.includes(GlobalUser?._id) && (
+              <button
+                className={`rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold`}
+              >
+                Join
+              </button>
+            )
           )}
 
           <div>...</div>

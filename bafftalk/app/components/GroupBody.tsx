@@ -67,7 +67,7 @@ const GroupBody = ({ group,posts,loading }: { group: Group | undefined, posts:Po
           <div className="flex items-center gap-2">
             <Image
               loader={() => GlobalUser?.avatar}
-              className="rounded-full"
+              className="rounded-full w-9 h-9 object-fill"
               src={GlobalUser?.avatar}
               height={30}
               width={30}
@@ -110,12 +110,12 @@ const GroupBody = ({ group,posts,loading }: { group: Group | undefined, posts:Po
                     />
                   </div>
                     <div className={`px-3 cursor-default py-2 text-black w-full ${collapsedItemId.includes(index) ? 'block':'hidden'}`}>
-                      <p className="flex items-start">
+                      <span className="flex items-start">
                         <div className="flex-shrink-0 w-2 h-2 rounded-full bg-black mt-1"></div>
                         <span className="ml-2">
                           {rule?.description}
                         </span>
-                      </p>
+                      </span>
                     </div>
                 </div>
               ))}

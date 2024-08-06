@@ -44,10 +44,10 @@ const Profile = () => {
       <div className="flex">
         <div className="w-full">
           <div className="flex p-2">
-            <div className="relative h-[80px] w-[120px] ">
+            <div className="relative h-[120px] w-[140px] ">
               <Image
                 loader={() => GlobalUser?.avatar}
-                className="rounded-[20px] cursor-pointer"
+                className="rounded-[20px] cursor-pointer w-full h-full"
                 src={GlobalUser?.avatar}
                 height={300}
                 width={120}

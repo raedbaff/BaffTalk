@@ -30,7 +30,7 @@ const ProfilePopup = () => {
             width={30}
             height={30}
             alt="group"
-            className="rounded-full"
+            className="rounded-full w-10 h-10 object-fill"
           />
           <div className="flex flex-col gap-1">
             <strong className="text-sm">View Profile</strong>

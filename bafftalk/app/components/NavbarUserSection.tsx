@@ -104,7 +104,7 @@ const NavbarUserSection = () => {
                   : GlobalUser.avatar
               }
               onClick={() => setProfilePopupOpen((prev) => !prev)}
-              className="rounded-full"
+              className="rounded-full w-[40px] h-[40px] border-4 border-transparent shadow-lg object-fill"
               src={
                 !GlobalUser.avatar
                   ? "/images/emptyAvatar.png"
