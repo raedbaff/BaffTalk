@@ -129,3 +129,50 @@ exports.FetchUserAvatar = async (req, res) => {
     res.status(500).json(error.message);
   }
 };
+exports.GetUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json("Please provide a user id");
+    }
+    const userIdObject = new mongoose.Types.ObjectId(userId);
+
+    const user = await User.aggregate([
+      { $match: { _id: userIdObject } },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "_id",
+          foreignField: "maker",
+          as: "posts",
+        },
+      },
+      {
+        $unwind: {
+          path: "$posts",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          username: { $first: "$username" },
+          email: { $first: "$email" },
+          avatar: { $first: "$avatar" },
+          friends: { $first: "$friends" },
+          links: { $first: "$links" },
+          role: { $first: "$role" },
+          posts: { $push: "$posts" },
+        },
+      },
+    ]);
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};

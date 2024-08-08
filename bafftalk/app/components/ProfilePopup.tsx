@@ -19,7 +19,7 @@ const ProfilePopup = () => {
   const [dark, setDark] = useState(false);
   return (
     <div className="w-[270px] bg-white rounded-[10px] fixed top-[55px] right-2 z-50 shadow-md border border-gray-200 ">
-      <div className="flex flex-col gap-2 py-4">
+      <div className="flex flex-col gap-1 py-4">
         <Link
           href={"/profile"}
           className="flex gap-3 mb-2 items-center cursor-pointer hover:border h-[50px] p-5 hover:bg-gray-200"
@@ -37,6 +37,7 @@ const ProfilePopup = () => {
             <p className="text-sm text-gray-500">{GlobalUser.username}</p>
           </div>
         </Link>
+        
         <div className="flex gap-3 mb-2 p-5 items-center cursor-pointer hover:border h-[50px] hover:bg-gray-200">
           <Image
             src={"/images/editavatar.svg"}
@@ -46,6 +47,16 @@ const ProfilePopup = () => {
             className="rounded-full"
           />
           <strong className="text-sm">Edit avatar</strong>
+        </div>
+        <div className="flex gap-3 mb-2 p-5 items-center cursor-pointer hover:border h-[50px] hover:bg-gray-200">
+          <Image
+            src={"/icons/friend-request.svg"}
+            width={25}
+            height={25}
+            alt="group"
+            className="rounded-full"
+          />
+          <strong className="text-sm">Friend Requests</strong>
         </div>
         <div className="flex gap-3 mb-2 p-5 items-center cursor-pointer hover:border h-[50px] hover:bg-gray-200">
           <Image

@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [GlobalUser, setGlobalUser] = useState(null);
-  const [loading,setLoading]=useState(true)
+  const [loading, setLoading] = useState(true);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const fetchUserInfo = async () => {
@@ -21,9 +21,9 @@ export const AuthProvider = ({ children }) => {
       // );
       // const userData = await fullUserDataResponse.json();
       setGlobalUser(data.user);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.log(error);
       setGlobalUser(null);
     }
@@ -33,7 +33,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ GlobalUser,loading, fetchUserInfo, setGlobalUser }}>
+    <AuthContext.Provider
+      value={{ GlobalUser, loading, fetchUserInfo, setGlobalUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

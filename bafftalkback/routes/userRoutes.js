@@ -9,6 +9,7 @@ const {
   RegisterAdmin,
   UpdateProfilePicture,
   FetchUserAvatar,
+  GetUserById,
 } = require("../controllers/UserController");
 const { upload } = require("../middleware/db");
 
@@ -26,12 +27,17 @@ router.get(
   })
 );
 router.get("/user/:id", getUserInfo);
+
+router.get("/user/find/:userId", GetUserById);
+
 router.get("/error", (req, res) => {
   res.status(500).json({ error: "something went wrong" });
 });
+
 router.get("/user", isLoggedIn, (req, res) => {
   res.status(200).json({ session: req.session, user: req.user });
 });
+
 router.get("/success", isLoggedIn, (req, res) => {
   res.status(200).json({ session: req.session });
 });
@@ -44,6 +50,7 @@ router.get("/logout", function (req, res, next) {
     res.redirect("http://localhost:3000");
   });
 });
+
 router.get("/admin/logout", function (req, res, next) {
   req.logout(function (err) {
     if (err) {
@@ -71,9 +78,11 @@ router.post("/login", (req, res, next) => {
 });
 
 router.post("/register", RegisterUser);
+
 router.post("/admin/register", RegisterAdmin);
 
 router.put("/user/avatar/:id", upload.single("avatar"), UpdateProfilePicture);
+
 router.get("/user/avatar/:avatarId", upload.single("avatar"), FetchUserAvatar);
 
 module.exports = router;

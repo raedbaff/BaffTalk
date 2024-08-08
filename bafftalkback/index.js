@@ -14,7 +14,7 @@ const commentRoutes = require("./routes/commentsRoutes");
 const upvoteRoutes = require("./routes/upvotesRoutes");
 const downvotesRoutes = require("./routes/downvotesRoutes");
 const statsRoutes = require("./routes/statsRoutes");
-
+const friendRequestRoutes = require("./routes/friendRequestRoutes")
 dotenv.config();
 const app = express();
 app.use(
@@ -49,6 +49,7 @@ app.use(commentRoutes);
 app.use(upvoteRoutes);
 app.use(downvotesRoutes);
 app.use(statsRoutes);
+app.use(friendRequestRoutes)
 
 app.get("/", (req, res) => {
   res.send('<a href="/auth/google">Connect with google</a>');

@@ -14,8 +14,8 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required:false,
-      default:null
+      required: false,
+      default: null,
     },
     avatar: {
       type: String,
@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
     },
     googleId: {
       type: String,
-      required: false, 
+      required: false,
     },
     links: [
       {
@@ -31,19 +31,27 @@ const UserSchema = new mongoose.Schema(
         default: [],
       },
     ],
-    role : {
+   
+
+    role: {
       type: String,
       enum: ["admin", "user"],
       default: "user",
-    }
+    },
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    default: [],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 UserSchema.methods.verifyPassword = async function (password) {
   return bcrypt.compare(password, this.password);
-
-}
+};
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;

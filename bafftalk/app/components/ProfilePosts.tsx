@@ -7,7 +7,13 @@ import { useAuth } from "../context/AuthContext";
 import calculateTime from "../utilityFunctions/calculateTime";
 import Login from "./Login";
 
-const Post = ({ post, loading }: { post: PostType; loading?: boolean }) => {
+const ProfilePosts = ({
+  post,
+  loading,
+}: {
+  post: PostType;
+  loading?: boolean;
+}) => {
   const [sortBy, setSortBy] = useState("New");
   const [sort, setSort] = useState(false);
   const [openComments, setOpenComments] = useState(false);
@@ -22,97 +28,7 @@ const Post = ({ post, loading }: { post: PostType; loading?: boolean }) => {
     setSortBy(sortType);
     setSort(false);
   };
-  const upvotePost = async () => {
-    try {
-      if (!GlobalUser) {
-        setLoggedOut(true);
-        document.body.style.overflow = "hidden";
-
-        return;
-      }
-
-      const upvote = {
-        post: updatedPost._id,
-        upvoter: GlobalUser._id,
-      };
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/upvotes`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(upvote),
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.message === "Upvote created") {
-          setupdatedPost((prevPost) => ({
-            ...prevPost,
-            upvotes: [...(prevPost.upvotes || []), GlobalUser?._id],
-            downvotes: prevPost.downvotes?.filter(
-              (downvoter) => downvoter !== GlobalUser?._id
-            ),
-          }));
-        } else {
-          setupdatedPost((prevPost) => ({
-            ...prevPost,
-            upvotes: prevPost.upvotes?.filter(
-              (upvoter) => upvoter !== GlobalUser?._id
-            ),
-          }));
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const downvotePost = async () => {
-    try {
-      if (!GlobalUser) {
-        setLoggedOut(true);
-        document.body.style.overflow = "hidden";
-
-        return;
-      }
-      const downvote = {
-        post: updatedPost._id,
-        downvoter: GlobalUser._id,
-      };
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/downvotes`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(downvote),
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.message === "Downvote created") {
-          setupdatedPost((prevPost) => ({
-            ...prevPost,
-            downvotes: [...(prevPost.downvotes || []), GlobalUser?._id],
-            upvotes: prevPost.upvotes?.filter(
-              (upvoter) => upvoter !== GlobalUser?._id
-            ),
-          }));
-        } else {
-          setupdatedPost((prevPost) => ({
-            ...prevPost,
-            downvotes: prevPost.downvotes?.filter(
-              (downvoter) => downvoter !== GlobalUser?._id
-            ),
-          }));
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ 
   const fetchComments = async () => {
     try {
       setCommentsLoading(true);
@@ -170,7 +86,7 @@ const Post = ({ post, loading }: { post: PostType; loading?: boolean }) => {
     document.body.style.overflow = "auto";
   };
   return (
-    <div className="flex flex-col w-full h-auto hover:bg-gray-50 rounded-[20px] cursor-pointer ">
+    <div className="flex flex-col w-full h-auto bg-gray-100 hover:bg-gray-200 rounded-[20px] cursor-pointer shadow-lg p-2 ">
       {loggedOut && (
         <Login
           close={handleClose}
@@ -203,26 +119,7 @@ const Post = ({ post, loading }: { post: PostType; loading?: boolean }) => {
           </div>
         </div>
         {/* Move the button container to the end */}
-        <div className="ml-auto flex gap-1">
-          {updatedPost.maker?._id === GlobalUser?._id ? (
-            <button
-              className={`rounded-[25px] bg-blue-600 hover:bg-blue-800
-             text-white px-2 text-[12px] font-bold`}
-            >
-              Edit
-            </button>
-          ) : (
-            !updatedPost.group.members?.includes(GlobalUser?._id) && (
-              <button
-                className={`rounded-[25px] bg-blue-800 text-white px-2 text-[12px] font-bold`}
-              >
-                Join
-              </button>
-            )
-          )}
-
-          <div>...</div>
-        </div>
+        
       </div>
       {/* post desc and photo */}
       <div className="flex flex-col gap-2">
@@ -246,40 +143,23 @@ const Post = ({ post, loading }: { post: PostType; loading?: boolean }) => {
 
         <div className="flex gap-2">
           <div
-            className={`rounded-[25px] bg-gray-300 ${
-              updatedPost.upvotes?.includes(GlobalUser?._id) && "bg-orange-600"
-            } ${
-              updatedPost.downvotes?.includes(GlobalUser?._id) &&
-              "bg-purple-600"
-            } flex gap-1 px-3 py-2 items-center`}
+            className={`rounded-[25px] bg-gray-300 flex gap-1 px-3 py-2 items-center`}
           >
             <Image
-              onClick={upvotePost}
-              src={
-                updatedPost.upvotes?.includes(GlobalUser?._id)
-                  ? "/images/upvoteSelected.svg"
-                  : "/images/upvote.svg"
-              }
+              src={"/images/upvote.svg"}
               height={20}
               width={20}
               alt="upvote"
-              className="cursor-pointer hover:transform hover:scale-150"
             />
             <strong className="text-sm">
               {(updatedPost.upvotes?.length || 0) -
                 (updatedPost.downvotes?.length || 0)}{" "}
             </strong>
             <Image
-              onClick={downvotePost}
-              src={
-                updatedPost.downvotes?.includes(GlobalUser?._id)
-                  ? "/images/downvoteSelected.svg"
-                  : "/images/downvote.svg"
-              }
+              src={"/images/downvote.svg"}
               height={20}
               width={20}
               alt="downvote"
-              className="cursor-pointer hover:transform hover:scale-150"
             />
           </div>
           <div
@@ -418,4 +298,4 @@ const Post = ({ post, loading }: { post: PostType; loading?: boolean }) => {
   );
 };
 
-export default Post;
+export default ProfilePosts;
