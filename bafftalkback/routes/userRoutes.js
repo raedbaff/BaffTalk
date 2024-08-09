@@ -10,6 +10,7 @@ const {
   UpdateProfilePicture,
   FetchUserAvatar,
   GetUserById,
+  SearchUsers,
 } = require("../controllers/UserController");
 const { upload } = require("../middleware/db");
 
@@ -84,5 +85,7 @@ router.post("/admin/register", RegisterAdmin);
 router.put("/user/avatar/:id", upload.single("avatar"), UpdateProfilePicture);
 
 router.get("/user/avatar/:avatarId", upload.single("avatar"), FetchUserAvatar);
+
+router.post("/searchUsers",SearchUsers)
 
 module.exports = router;

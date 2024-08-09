@@ -12,8 +12,16 @@ type LoadingType =
   | "spinningBubbles"
   | "spokes";
 
-const Loading = ({ type, color }: { type: LoadingType; color: string }) => (
-  <ReactLoading type={type} color={color} height={50} width={50} />
-);
+const Loading = ({
+  type,
+  color,
+  height,
+  width,
+}: {
+  type: LoadingType;
+  color: string;
+  height?: number;
+  width?: number;
+}) => <ReactLoading type={type} color={color} height={height ? height : 50} width={width ? width : 50} />;
 
 export default Loading;

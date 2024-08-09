@@ -176,3 +176,22 @@ exports.GetUserById = async (req, res) => {
     res.status(500).json(error.message);
   }
 };
+exports.SearchUsers = async (req, res) => {
+  try {
+    const { searchInput } = req.body;
+
+    if (!searchInput) {
+      return res.status(400).json("Please provide a search input");
+    }
+    const users = await User.find({
+      username: { $regex: searchInput, $options: "i" },
+      role: { $ne: "admin" },
+    });
+    if (users.length === 0) {
+      return res.status(404).json("No users found");
+    }
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
