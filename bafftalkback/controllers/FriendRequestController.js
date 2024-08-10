@@ -28,7 +28,7 @@ exports.GetFriendRequests = async (req, res) => {
     if (!userId) {
       return res.status(400).json({ message: "User id is required" });
     }
-    const friendRequests = await FriendRequest.find({ receiver: userId });
+    const friendRequests = await FriendRequest.find({ receiver: userId }).populate("sender");
     if (friendRequests.length === 0) {
       return res.status(404).json({ message: "No friend requests found" });
     }
@@ -37,6 +37,23 @@ exports.GetFriendRequests = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.SentFriendRequests = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User id is required" });
+    }
+    const friendRequests = await FriendRequest.find({ sender: userId }).populate("receiver");
+    if (friendRequests.length === 0) {
+      return res.status(404).json({ message: "No friend requests found" });
+    }
+    res.status(200).json(friendRequests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 exports.DeleteFriendRequest = async (req, res) => {
   try {

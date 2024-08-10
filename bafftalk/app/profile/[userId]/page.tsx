@@ -2,6 +2,7 @@
 import MyProfileContent from "@/app/components/MyProfileContent";
 import UserInfoModal from "@/app/components/UserInfoModal";
 import { useAuth } from "@/app/context/AuthContext";
+import { log } from "console";
 import { get } from "http";
 import Image from "next/image";
 import Link from "next/link";
@@ -204,11 +205,7 @@ const UserProfile = ({ params }: { params: { userId: string } }) => {
 
           <hr className="border-gray-300 my-0 w-full mt-2"></hr>
           <div className="mt-2 flex justify-start items-center">
-            <MyProfileContent
-              username={UserData?.username}
-              data={UserData?.posts}
-              contentType={selectedMenu}
-            />
+            <MyProfileContent user={UserData} contentType={selectedMenu} />
           </div>
         </div>
       </div>

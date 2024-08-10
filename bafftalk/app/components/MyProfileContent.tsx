@@ -6,33 +6,28 @@ import ProfilePosts from "./ProfilePosts";
 
 const MyProfileContent = ({
   contentType,
-  data,
-  username,
+  user,
 }: {
   contentType: string;
-  data: any;
-  username: string;
+  user: any;
 }) => {
-  console.log("data from my profile content");
-  
-  console.log(data);
   let content;
   switch (contentType) {
     case "Overview":
       content = (
         <>
-          {data?.length === 0 ? (
+          {user?.posts?.length === 0 ? (
             <div className="flex flex-col gap-2 w-full justify-center items-center mt-2 ">
               {" "}
               <Image src={"/images/404.svg"} alt="404" width={50} height={50} />
               <p className="font-bold text-lg">
-                {username} hasn&apos;t posted yet
+                {user?.username} hasn&apos;t posted yet
               </p>
             </div>
           ) : (
             <div className="flex flex-col gap-4 w-[90%] justify-center items-start mt-2">
-              {data?.map((post: PostType) => (
-                  <ProfilePosts key={post._id} post={post} />
+              {user?.posts?.map((post: PostType) => (
+                <ProfilePosts key={post._id} post={post} avatar={user.avatar} />
               ))}
             </div>
           )}

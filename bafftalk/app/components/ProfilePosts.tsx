@@ -10,9 +10,11 @@ import Login from "./Login";
 const ProfilePosts = ({
   post,
   loading,
+  avatar,
 }: {
   post: PostType;
   loading?: boolean;
+  avatar: string;
 }) => {
   const [sortBy, setSortBy] = useState("New");
   const [sort, setSort] = useState(false);
@@ -28,7 +30,7 @@ const ProfilePosts = ({
     setSortBy(sortType);
     setSort(false);
   };
- 
+
   const fetchComments = async () => {
     try {
       setCommentsLoading(true);
@@ -85,6 +87,7 @@ const ProfilePosts = ({
     setLoggedOut(false);
     document.body.style.overflow = "auto";
   };
+
   return (
     <div className="flex flex-col w-full h-auto bg-gray-100 hover:bg-gray-200 rounded-[20px] cursor-pointer shadow-lg p-2 ">
       {loggedOut && (
@@ -97,8 +100,8 @@ const ProfilePosts = ({
       <div className="flex justify-between items-center p-2">
         <div className="flex items-center justify-between gap-1">
           <Image
-            loader={() => updatedPost?.maker?.avatar}
-            src={updatedPost?.maker?.avatar}
+            loader={() => avatar}
+            src={avatar}
             width={30}
             height={30}
             alt="peter"
@@ -119,7 +122,6 @@ const ProfilePosts = ({
           </div>
         </div>
         {/* Move the button container to the end */}
-        
       </div>
       {/* post desc and photo */}
       <div className="flex flex-col gap-2">

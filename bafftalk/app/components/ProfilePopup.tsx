@@ -48,7 +48,7 @@ const ProfilePopup = () => {
           />
           <strong className="text-sm">Edit avatar</strong>
         </div>
-        <div className="flex gap-3 mb-2 p-5 items-center cursor-pointer hover:border h-[50px] hover:bg-gray-200">
+        <Link href={"/FriendRequests"} className="flex gap-3 mb-2 p-5 items-center cursor-pointer hover:border h-[50px] hover:bg-gray-200">
           <Image
             src={"/icons/friend-request.svg"}
             width={25}
@@ -57,7 +57,7 @@ const ProfilePopup = () => {
             className="rounded-full"
           />
           <strong className="text-sm">Friend Requests</strong>
-        </div>
+        </Link>
         <div className="flex gap-3 mb-2 p-5 items-center cursor-pointer hover:border h-[50px] hover:bg-gray-200">
           <Image
             src={"/images/achievement.svg"}
