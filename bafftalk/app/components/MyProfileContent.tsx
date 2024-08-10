@@ -3,20 +3,27 @@ import React from "react";
 import Post from "./Post";
 import { PostType } from "@/types";
 import ProfilePosts from "./ProfilePosts";
+import Loading from "./loading";
 
 const MyProfileContent = ({
   contentType,
   user,
+  loading,
 }: {
   contentType: string;
   user: any;
+  loading?: boolean;
 }) => {
   let content;
   switch (contentType) {
     case "Overview":
       content = (
         <>
-          {user?.posts?.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col gap-2 w-full justify-center items-center mt-2 ">
+              <Loading type={"spin"} color="black" />
+            </div>
+          ) : user?.posts?.length === 0 ? (
             <div className="flex flex-col gap-2 w-full justify-center items-center mt-2 ">
               {" "}
               <Image src={"/images/404.svg"} alt="404" width={50} height={50} />

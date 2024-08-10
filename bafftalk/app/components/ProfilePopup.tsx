@@ -25,8 +25,8 @@ const ProfilePopup = () => {
           className="flex gap-3 mb-2 items-center cursor-pointer hover:border h-[50px] p-5 hover:bg-gray-200"
         >
           <Image
-          loader={()=>GlobalUser.avatar}
-            src={GlobalUser.avatar}
+          loader={()=>GlobalUser?.avatar ? GlobalUser?.avatar : "/images/emptyAvatar.png"}
+            src={GlobalUser?.avatar ? GlobalUser?.avatar : "/images/emptyAvatar.png"}
             width={30}
             height={30}
             alt="group"

@@ -11,6 +11,7 @@ const Profile = () => {
   const [selectedMenu, setSelectedMenu] = useState("Overview");
   const [displayInfo, setDisplayInfo] = useState(false);
   const [userPosts, setUserPosts] = useState<any>([]);
+  const [LoadingUserPosts, setLoadingUserPosts] = useState(true);
   const handleFileChange = async (e: any) => {
     try {
       const newForm = new FormData();
@@ -41,9 +42,10 @@ const Profile = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/find/${GlobalUser?._id}`
       );
       if (response.ok) {
+        
         const data = await response.json();
-
-        setUserPosts(data[0].posts);
+        setLoadingUserPosts(false);
+        setUserPosts(data[0]);
       }
     } catch (error) {
       console.log(error);
@@ -64,9 +66,9 @@ const Profile = () => {
           <div className="flex p-2">
             <div className="relative h-[120px] w-[140px] ">
               <Image
-                loader={() => GlobalUser?.avatar}
+                loader={() => GlobalUser?.avatar ? GlobalUser?.avatar : "/images/emptyAvatar.png"}
                 className="rounded-[20px] cursor-pointer w-full h-full"
-                src={GlobalUser?.avatar}
+                src={GlobalUser?.avatar ? GlobalUser?.avatar : "/images/emptyAvatar.png"}
                 height={300}
                 width={120}
                 alt="avatar"
@@ -163,8 +165,8 @@ const Profile = () => {
           <hr className="border-gray-300 my-0 w-full mt-2"></hr>
           <div className="mt-2 flex justify-start items-center">
             <MyProfileContent
-              username={GlobalUser?.username}
-              data={userPosts}
+              loading={LoadingUserPosts}
+              user={userPosts}
               contentType={selectedMenu}
             />
           </div>

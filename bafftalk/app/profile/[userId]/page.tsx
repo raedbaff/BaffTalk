@@ -2,10 +2,8 @@
 import MyProfileContent from "@/app/components/MyProfileContent";
 import UserInfoModal from "@/app/components/UserInfoModal";
 import { useAuth } from "@/app/context/AuthContext";
-import { log } from "console";
-import { get } from "http";
+
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -16,6 +14,7 @@ const UserProfile = ({ params }: { params: { userId: string } }) => {
   const [FriendRequest, setFriendRequest] = useState<any>();
   const [selectedMenu, setSelectedMenu] = useState("Overview");
   const [displayInfo, setDisplayInfo] = useState(false);
+  const [LoadingUserPosts, setLoadingUserPosts] = useState(true);
   const router = useRouter();
 
   const fetchUser = async () => {
@@ -27,6 +26,11 @@ const UserProfile = ({ params }: { params: { userId: string } }) => {
         router.replace("/notFound");
       }
       const data = await response.json();
+      console.log("your user data");
+      console.log(data[0]);
+      setLoadingUserPosts(false);
+      
+      
       setUserData(data[0]);
     } catch (error) {
       console.log(error);
@@ -86,9 +90,9 @@ const UserProfile = ({ params }: { params: { userId: string } }) => {
           <div className="flex p-2">
             <div className="h-[120px] w-[140px] ">
               <Image
-                loader={() => UserData?.avatar}
+                loader={() => UserData?.avatar ? UserData?.avatar : "/images/emptyAvatar.png"}
                 className="rounded-[20px] w-full h-full"
-                src={UserData?.avatar}
+                src={UserData?.avatar ? UserData?.avatar : "/images/emptyAvatar.png"}
                 height={300}
                 width={120}
                 alt="avatar"
@@ -205,7 +209,7 @@ const UserProfile = ({ params }: { params: { userId: string } }) => {
 
           <hr className="border-gray-300 my-0 w-full mt-2"></hr>
           <div className="mt-2 flex justify-start items-center">
-            <MyProfileContent user={UserData} contentType={selectedMenu} />
+            <MyProfileContent loading={LoadingUserPosts} user={UserData} contentType={selectedMenu} />
           </div>
         </div>
       </div>

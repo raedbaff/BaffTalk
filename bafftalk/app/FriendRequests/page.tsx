@@ -11,6 +11,8 @@ const FriendRequests = () => {
 
   const fetchReceivedRequests = async () => {
     try {
+      let pendingRequests: any[] = [];
+      let rejectedRequests: any[] = [];
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/getFriendRequests/${GlobalUser?._id}`
       );
@@ -18,14 +20,19 @@ const FriendRequests = () => {
         setReceivedRequests([]);
       } else {
         const data = await response.json();
-        console.log(data);
-
-        setReceivedRequests(data);
         for (let request of data) {
-          if (request.state === "denied") {
-            setDeniedRequests((prev) => [...prev, request]);
+          if (request.state === "pending") {
+            pendingRequests.push(request);
           }
         }
+
+        for (let request of data) {
+          if (request.state === "rejected") {
+            rejectedRequests.push(request);
+          }
+        }
+        setReceivedRequests(pendingRequests);
+        setDeniedRequests(rejectedRequests);
       }
     } catch (error) {
       console.log(error);
@@ -42,6 +49,48 @@ const FriendRequests = () => {
         const data = await response.json();
         console.log(data);
         setSentRequests(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const acceptFriendRequest = async (request: any) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/acceptFriendRequest/${request._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        setReceivedRequests((prev) =>
+          prev.filter((req) => req._id !== request._id)
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const rejectFriendRequest = async (request: any) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/rejectFriendRequest/${request._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        setReceivedRequests((prev) =>
+          prev.filter((req) => req._id !== request._id)
+        );
+        setDeniedRequests((prev) => [...prev, request]);
       }
     } catch (error) {
       console.log(error);
@@ -70,7 +119,7 @@ const FriendRequests = () => {
                 >
                   <div className="p-4 flex wf items-center gap-2">
                     <Image
-                      loader={() => request.sender.avatar}
+                      loader={() => request.sender.avatar ? request.sender.avatar : "/images/emptyAvatar.png"}
                       src={
                         request.sender.avatar
                           ? request.sender.avatar
@@ -91,6 +140,7 @@ const FriendRequests = () => {
                     </div>
                     <div className="flex items-center gap-3 ml-auto">
                       <Image
+                        onClick={() => acceptFriendRequest(request)}
                         src={"/icons/accept.svg"}
                         height={30}
                         width={30}
@@ -98,6 +148,7 @@ const FriendRequests = () => {
                         className="cursor-pointer hover:scale-125"
                       />
                       <Image
+                        onClick={() => rejectFriendRequest(request)}
                         src={"/icons/decline.svg"}
                         height={30}
                         width={30}
@@ -128,7 +179,7 @@ const FriendRequests = () => {
                 >
                   <div className="p-4 flex wf items-center gap-2">
                     <Image
-                      loader={() => request.sender.avatar}
+                      loader={() => request.sender.avatar ? request.sender.avatar : "/images/emptyAvatar.png"}
                       src={
                         request.sender.avatar
                           ? request.sender.avatar
@@ -195,9 +246,9 @@ const FriendRequests = () => {
                         className={`${
                           request.state === "pending"
                             ? "text-orange-600"
-                            : (request.state = "accepted"
-                                ? "bg-green-600"
-                                : "bg-red-600")
+                            : request.state === "accepted"
+                            ? "text-green-600"
+                            : "text-red-600"
                         } font-bold`}
                       >
                         {request.state}

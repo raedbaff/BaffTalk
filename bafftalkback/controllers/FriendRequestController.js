@@ -1,4 +1,5 @@
 const FriendRequest = require("../models/FriendRequest");
+const User = require("../models/User");
 
 exports.CreateFriendRequest = async (req, res) => {
   try {
@@ -64,6 +65,26 @@ exports.DeleteFriendRequest = async (req, res) => {
 
 exports.AcceptFriendRequest = async (req, res) => {
   try {
+    const { requestId} = req.params;
+    if (!requestId) {
+      return res.status(400).json({ message: "Request id is required" });
+    }
+    const friendRequest = await FriendRequest.findById(requestId);
+
+    if (!friendRequest) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+    friendRequest.state = "accepted";
+    await User.findByIdAndUpdate(friendRequest.sender, {
+      $push: { friends: friendRequest.receiver },
+    });
+    await User.findByIdAndUpdate(friendRequest.receiver, {
+      $push: { friends: friendRequest.sender },
+    });
+    await friendRequest.save();
+    res.status(200).json({message:"Friend request accepted"});
+    
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -71,6 +92,18 @@ exports.AcceptFriendRequest = async (req, res) => {
 
 exports.RejectFriendRequest = async (req, res) => {
   try {
+    const { requestId } = req.params;
+    if (!requestId) {
+      return res.status(400).json({ message: "Request id is required" });
+    }
+    const friendRequest = await FriendRequest.findById(requestId);
+
+    if (!friendRequest) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+    friendRequest.state = "rejected";
+    await friendRequest.save();
+    res.status(200).json({message:"Friend request rejected"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
